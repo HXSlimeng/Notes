@@ -18,5 +18,3 @@
   - git pull --rebase origin 远程分支名
 执行完之后，你的代码就跟远端又一样了。并且你的修改仍然在，此时再提交你的代码
   - git push origin test<分支名>
-
-我是对的管你呢
