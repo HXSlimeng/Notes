@@ -29,6 +29,8 @@ type Student = Person & { school: string };
 
 ### 命名空间
 
+- 必须在命名空间内export导出、外部成员才能访问到命名空间内部的类型
+
 1. 解决重名问题
 
 2. 同文件使用
@@ -48,7 +50,7 @@ type Student = Person & { school: string };
    };
    ```
 
-3. 其他文件使用三斜杠引用
+3. 其他文件使用三斜杠引用(==三斜线指令==)
 
    ```typescript
    /// <reference path = "test.ts" />
@@ -77,13 +79,15 @@ type Student = Person & { school: string };
    }
    ```
 
-### 泛型
+### 三斜线指令
 
-Omit 和 Pick
+1. `/// <reference path = "test.ts" />`
 
-```typescript
+   导入该路径下的所有类型
 
-```
+2. `/// <reference types="node" />`
+
+   表明这个文件使用了`@types/node/index.d.ts`里面声明的名字
 
 ### 声明合并
 
@@ -105,7 +109,7 @@ let box: Box = { height: 5, width: 6, scale: 10 };
 
 ### 关键字
 
-1. declear:该关键字用于声明全局变量
+1. declear  该关键字用于声明全局变量(一般在声明文件中使用 .d.ts)
 
 ```typescript
 declare namespace myLib {
@@ -121,7 +125,7 @@ declare var $: any;
 declare var jQuery: any;
 ```
 
-2. keyof(取对象类型的 key 类型)
+2. keyof  (取对象类型的 key 类型)
 
    ```typescript
    interface Person {
@@ -129,6 +133,53 @@ declare var jQuery: any;
      age: number;
    }
    type keyPer = keyof Person; //'name' | 'age'
+   ```
+3. extends
+
+   - 定义类时为继承自某个父类
+
+     ```typescript
+     class stu extends second implements Student, Person
+     ```
+
+   - 条件判断
+
+     ```typescript
+     //此情况下 T必须包含Student的所有类型
+     type temp<T> = T extends Student ? Student : { test: string };
+     ```
+
+   - interface 继承
+
+     ```typescript
+     interface Person{
+     }
+     type Person1{
+     }
+     //1 interface interface继承
+     interface Student extends Person {
+         school:string
+     }
+     //2 interface type继承
+     interface Student extends Person1 {
+         school:string
+     }
+     ```
+
+     `type继承可以使用交叉类型&`
+
+   - 可以在泛型内使用
+
+     ```typescript
+     type testRange1<T extends testRange> = T;
+     ```
+
+4. implements
+
+   用于定义类的类型多个使用逗号分隔
+
+   ```typescript
+   class stu extends second implements Student, Person
    ```
 
 ### 联合类型（ | ）和交叉类型 （ & ）
@@ -166,57 +217,8 @@ if (testArr(arr1)) {
 
 4. 使用 instanceof 判断（构造函数，类）
 
-### extends 和 implements
+### 高阶类型方法
 
-1. extends
-
-   - 定义类时为继承自某个父类
-
-     ```typescript
-     class stu extends second implements Student, Person
-     ```
-
-   - 条件判断
-
-     ```typescript
-     //此情况下 T必须包含Student的所有类型
-     type temp<T> = T extends Student ? Student : { test: string };
-     ```
-
-   - interface 继承
-
-     ```typescript
-     interface Person{
-     }
-     type Person1{
-     }
-     //1 interface interface继承
-     interface Student extends Person {
-         school:string
-     }
-     //2 interface type继承
-     interface Student extends Person1 {
-         school:string
-     }
-     ```
-
-     `type继承可以使用交叉类型`
-
-   - 可以在泛型内使用
-
-     ```typescript
-     type testRange1<T extends testRange> = T;
-     ```
-
-2. implements
-
-   ​ 用于定义类的类型多个使用逗号分隔
-
-   ```typescript
-   class stu extends second implements Student, Person
-   ```
-
-3. 高阶类型方法
 
 ```typescript
 //1. Pick 获取目标类型的某一项
@@ -238,13 +240,100 @@ type RequiredObj = Required<PartialObj>;
 type Irdol = Readonly<Iptl>;
 //8. Record 示例中 最终该类型拥有两个属性（x、y）,且类型都为obj
 type RecordObj = Record<"x" | "y", obj>;
+//9. ReturnType 获取函数的返回值类型
+//10. Parameters 获取函数的参数类型
+type AppendArgument<F extends (...args: any[]) => any, A> = (x: A, ...args: Parameters<F>) => ReturnType<F>;
+ - infer方式
+type AppendArgument<F extends (...args: any) => any, T> = F extends (
+  ...args: infer P
+) => infer Return
+  ? (x: T, ...args: P) => Return
+  : never;
+
 ```
 
 - ==类型推导 infer==
 
+  **推导泛型参数**
+  
   ```typescript
   type inferType<T extends string[]> = T extends [infer First, ...infer Rest]
     ? First
     : never;
   type tempInferType = inferType<["1", "2456"]>; //'1'
+  
+  //可以用来推断函数的返回值
+  type ReturnType<T> = T extends (...args: any[]) => infer R ? R : any;
+  
+  type func = () => number;
+  type variable = string;
+  type funcReturnType = ReturnType<func>; // funcReturnType 类型为 number
+  type varReturnType = ReturnType<variable>; // varReturnType 类型为 any
+  
+  type NaiveFlat<T extends any[]> = T extends (infer P)[] ? (P extends any[] ? NaiveFlat<P> : P) : never;
+  
+  
   ```
+  
+- 巧用断言解决问题
+
+  ```typescript
+  type ConditionalPick<V, T> = {
+    [K in keyof V as V[K] extends T ? K : never]: V[K];
+  };
+  //提取obj中属性类型为string的属性返回
+  type test = ConditionalPick<obj, string>;
+  ```
+
+  
+### 函数重载
+
+- 当函数参数为联合类型时 可用函数重载解决
+
+```typescript
+function f(arg1: string, arg2: string): string;
+function f(arg1: number, arg2: number): number;
+function f(arg1: string | number, arg2: string | number) {
+  if (typeof arg1 == "string" && typeof arg2 == "string") {
+    return arg1 + arg2;
+  } else if (typeof arg1 == "number" && typeof arg2 == "number") {
+    return arg1 + arg2;
+  }
+}
+```
+
+### 关于...T[]
+
+```typescript
+type Head2<T extends Array<any>> = T extends [infer H, ...T[number]] ? T[number] : never;
+type t6 = Head2<[1,2,3]>//1|2|3
+//此处T为传入的数组，也就是[1,2,3]，T[number]可以理解为按照索引取元素内容的类型
+//相当于
+[1,2,3][0] | [1,2,3][1] | [1,2,3][1] 
+//可以得到 1|2|3
+
+type ItemType<T extends Array<any>> = T[number]
+```
+
+### 逆变和协变
+
+- 候选类型处于协变位置会被推断为联合类型
+
+  ```typescript
+  type Foo<T> = T extends { a: infer U, b: infer U } ? U : never;
+  type T10 = Foo<{ a: string, b: string }>;  // string
+  type T11 = Foo<{ a: string, b: number }>;  // string | number
+  ```
+
+- 候选类型处于逆变位置会被推断为交叉类型
+
+  ```typescript
+  type Bar<T> = T extends { a: (x: infer U) => void, b: (x: infer U) => void } ? U : never;
+  type T20 = Bar<{ a: (x: string) => void, b: (x: string) => void }>;  // string
+  type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string & number
+  ```
+
+  
+
+  
+
