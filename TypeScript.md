@@ -333,7 +333,36 @@ type ItemType<T extends Array<any>> = T[number]
   type T21 = Bar<{ a: (x: string) => void, b: (x: number) => void }>;  // string & number
   ```
 
+
+### .d.ts类型声明文件
+
+- 只能定义类型 
+
+- 使用declare声明全局变量
+
+- 定义模块文件
+
+  ```typescript
+  //.d.ts文件定义
+  declare module 'myModule' {
+    export function doSomething(): void;
+  }
+  //其他文件引用
+  import { doSomething } from 'myModule';
+  ```
+
+
+### 杂项
+
+- 将枚举转换为联合类型
+
+  ```typescript
+  keyof typeof HttpMethods 取key
   
+  type IGetVals<T> = T extends {[key:string]:infer R } ? R : never;
+  IGetVals<typeof HttpMethods>  取val
+  
+  将某个变量的类型指定为 枚举 则赋值需要使用该枚举赋值
+  ```
 
   
-
