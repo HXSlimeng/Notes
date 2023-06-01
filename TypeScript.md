@@ -365,4 +365,198 @@ type ItemType<T extends Array<any>> = T[number]
   将某个变量的类型指定为 枚举 则赋值需要使用该枚举赋值
   ```
 
+
+### 装饰符
+
+- 类装饰器
+
+```typescript
+function classDecorator<T extends {new(...args:any[]):{}}>(constructor:T) {
+    return class extends constructor {
+        newProperty = "new property";
+        hello = "override";
+    }
+}
+
+@classDecorator
+class Greeter {
+    property = "property";
+    hello: string;
+    constructor(m: string) {
+        this.hello = m;
+    }
+}
+
+console.log(new Greeter("world"));
+//output: hello:"override", property = "property"; newProperty = "new property";
+```
+
+- 方法装饰器
+
+```typescript
+function enumerable(value: boolean) {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        descriptor.enumerable = value;
+    };
+}
+
+class Greeter {
+    greeting: string;
+    constructor(message: string) {
+        this.greeting = message;
+    }
+
+    @enumerable(false) // 在类中将上面的方法设置为装饰器
+    greet() {
+        return "Hello, " + this.greeting;
+    }
+}
+
+```
+
+- 访问器装饰器 get set
+
+  ```typescript
+  function configurable(value: boolean) {
+      return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+          descriptor.configurable = value;
+      };
+  }
+  class Point {
+      private _x: number;
+      private _y: number;
+      constructor(x: number, y: number) {
+          this._x = x;
+          this._y = y;
+      }
+  
+      @configurable(false)
+      get x() { return this._x; }
+  
+      @configurable(false)
+      get y() { return this._y; }
+  }
+  ```
+
+- 属性装饰器
+
+```typescript
+function validate(target: any, key: string, descriptor: PropertyDescriptor) {
+  let setter = descriptor.set
+
+  descriptor.set = function (value: any) {
+    if (value === undefined || value === null || value === '') {
+      throw new Error(`Invalid value for ${key}: ${value}`)
+    }
+
+    setter.call(this, value)
+  }
+}
+
+class Person {
+  private _name: string = ''
+
+  @validate
+  set name(value: string) {
+    this._name = value
+  }
+
+  get name() {
+    return this._name
+  }
+}
+
+let p = new Person()
+p.name = '' // 报错：Invalid value for name: 
+```
+
+- 参数装饰器
+
+  ```typescript
+  function log(target: any, key: string, index: number) {
+    let originalMethod = target[key]
+  
+    target[key] = function (...args: any[]) {
+      console.log(`Calling ${key} with arguments: ${JSON.stringify(args)}`)
+  
+      return originalMethod.apply(this, args)
+    }
+  }
+  
+  class Person {
+    greet(@log name: string) {
+      console.log(`Hello, ${name}`)
+    }
+  }
+  
+  let p = new Person()
+  p.greet('limeng') // 打印日志：Calling greet with arguments: ["limeng"]，Hello, limeng
+  
+  ```
+
+### 静态成员和实例成员
+
+- 实例成员只能在类被实例化后才能访问
+- 静态成员 有static前缀关键字
+
+```typescript
+class MyClass {
+  static myStaticProperty = 42;
+  myInstanceProperty = "hello";
+
+  static myStaticMethod() {
+    console.log("I am a static method");
+  }
+
+  myInstanceMethod() {
+    console.log("I am an instance method");
+  }
+}
+//静态成员可以直接通过类名访问静态成员
+console.log(MyClass.myStaticProperty); // 42
+MyClass.myStaticMethod(); // "I am a static method"
+
+//实例成员只能在实例化后才能正常访问
+const myInstance = new MyClass();
+console.log(myInstance.myInstanceProperty); // "hello"
+myInstance.myInstanceMethod(); // "I am an instance method"
+```
+
+- 执行顺序
+
+  ```typescript
+  @classDecorator1
+  @classDecorator2
+  class Animal {
+    constructor(@constructorParamsDecorator options) {
+  
+    }
+  
+    @staticPropertyDecorator
+    static Name = 'zlx'
+  
+    @staticFuncDecorator
+    static Say(@staticParamsDecorator name: string) {
+  
+    }
+  
+    @instancePropertyDecorator
+    age = 11
+  
+    @instanceFuncDecorator
+    run(@instanceParamsDecorator time: number) {
+    }
+  }
+  
+  // instance property decorator
+  // instance params decorator
+  // instance func decorator
+  // static property decorator
+  // static params decorator
+  // static func decorator
+  // constructor params decorator
+  // class decorator2
+  // class decorator1
+  ```
+
   
