@@ -559,4 +559,10 @@ myInstance.myInstanceMethod(); // "I am an instance method"
   // class decorator1
   ```
 
-  
+### 取函数的参数为泛型类型
+
+```typescript
+//在参数前加泛型定义 
+type IRender = <K extends keyof HTMLElementTagNameMap>(tag: K, options: keyof HTMLElementTagNameMap[K]) => HTMLElementTagNameMap[K];
+```
+
