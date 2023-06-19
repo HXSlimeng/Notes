@@ -101,4 +101,13 @@ bc.postMessage('New listening connected!');
 
 ### 6. TextEncoder
 
-​	
+### 7.动画event
+
+​	可以为dom添加该事件以再transition动画结束后触发
+
+​	useage:
+
+```typescript
+transitionstart/end animationstart/end
+```
+
