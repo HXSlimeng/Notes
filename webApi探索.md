@@ -111,3 +111,13 @@ bc.postMessage('New listening connected!');
 transitionstart/end animationstart/end
 ```
 
+8、监听某个dom的尺寸变化`ResizeObserver`
+
+```typescript
+const resizeOb = new ResizeObserver((entries)=>{
+//...callback    
+})
+resizeOb.observe(dom)
+
+```
+

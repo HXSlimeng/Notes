@@ -1,3 +1,5 @@
+[深入理解TS](https://jkchao.github.io/typescript-book-chinese/typings/thisType.html)
+
 ### interface 与 type 关键字的异同点
 
 1. interface 可以实现接口合并，type 不行
@@ -394,6 +396,7 @@ console.log(new Greeter("world"));
 - 方法装饰器
 
 ```typescript
+//例1
 function enumerable(value: boolean) {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
         descriptor.enumerable = value;
@@ -411,7 +414,29 @@ class Greeter {
         return "Hello, " + this.greeting;
     }
 }
+//例2
+/**
+  * @param  {any} targetClassPrototype - 目标方法所属类的原型对象
+ * @param  {string} name - 目标方法的名
+ * @param  {PropertyDescriptor} decr - 目标方法的属性描述器
+ */
+function restoreCtx(target: any, propertyKey: any, descriptor: PropertyDescriptor) {
+  let method = descriptor.value
+  descriptor.value = function (this: Cell, ...args: any) {
+      //此时的this执行中 相当于是执行testClass.drawBorder() this指向Cell
+    this.ctx.save()
+    let result = method.apply(this, args)
+    this.ctx.restore()
+    return result
+  }
+}
 
+class Cell{
+  @restoreCtx
+  drawBorder(test: any) {
+    //...
+  }
+}
 ```
 
 - 访问器装饰器 get set
@@ -651,4 +676,40 @@ type IRender = <K extends keyof HTMLElementTagNameMap>(tag: K, options: keyof HT
 > tsc --emitDeclarationOnly || tsc -d
 > ```
 >
-> 
+
+### TS中的this
+
+- 可以在函数声明中，将this列为参数指明this的类型
+
+```typescript
+function restoreCtx(target: any, propertyKey: any, descriptor: PropertyDescriptor) {
+  let method = descriptor.value
+  //此时this为cell类型
+  descriptor.value = function (this: Cell, ...args: any) {
+    this.ctx.save()
+    let result = method.apply(this, args)
+    this.ctx.restore()
+    return result
+  }
+}
+```
+
+- thisType【TODO】:指明函数内的this类型
+
+  ```typescript
+  type Point = {
+    x: number
+    y: number
+    moveBy: (dx: number, dy: number) => void
+  } & ThisType<{ message: string }>
+  
+  let p: Point = {
+    x: 10,
+    y: 20,
+    moveBy(dx, dy) {
+      this // {message:string}
+    },
+  }
+  ```
+
+  

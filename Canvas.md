@@ -33,3 +33,17 @@ export const PIXEL_RATIO = (() => {
 ​	`save`用来保存画布的状态、`restore`可以将画布的状态返回为上一次保存的结果、防止画布状态混淆
 
 3、`clip`裁切一部分画布内容
+
+4、`canvas`的 `style、height`等属性更改后transform参数会重置
+
+5、绘制图片
+
+> img标签图片有加载时间 不能第一时间加载
+
+- `HTMLImageElement.complete` 该属性可以获取图片的加载完成状态
+- `content.addEventListener('load',()=>{})`可以监控图片是否加载完成
+
+```typescript
+
+```
+
