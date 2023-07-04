@@ -9,7 +9,7 @@
 ```typescript
 //获取像素缩放比例
 export const PIXEL_RATIO = (() => {
-  const ctx = document.createElement('canvas').getContext('2d'),
+  const ctx = document.cre	ateElement('canvas').getContext('2d'),
     dpr = window.devicePixelRatio || 1,
     bsr = ctx['webkitBackingStorePixelRatio'] ||
       ctx['mozBackingStorePixelRatio'] ||

@@ -111,7 +111,7 @@ bc.postMessage('New listening connected!');
 transitionstart/end animationstart/end
 ```
 
-8、监听某个dom的尺寸变化`ResizeObserver`
+### 8.监听某个dom的尺寸变化`ResizeObserver`
 
 ```typescript
 const resizeOb = new ResizeObserver((entries)=>{
@@ -121,3 +121,26 @@ resizeOb.observe(dom)
 
 ```
 
+### 9.[ArrayBuffer,blob,File](https://blog.csdn.net/lychee_xiahua/article/details/113170727)
+
+​	`FileReader`可以对`blob`对象进行处理
+
+> 在浏览器环境中  `Blob`对象自带`text`属性方法，返回一个`Promise`，该`promise`成功后返回一个`utf-8`编码的文本
+
+- `ArrayBuffer`:（可操作、大型数据，比Blob更底层）ArrayBuffer是一种表示通用内存缓冲区的对象,没有任何类型信息；它只是一个连续的、固定长度的二进制数据块,可以使用`TypedArray`或者`DataView`来操作
+
+  `nodejs`中可以使用`Buffer.from`创建一个`Buffer`,解析则使用`buffer.toString()`可以得到一个默认`utf-8`解码的内容
+
+- `Blob`:(不可操控、可以设置MIME 类型)
+
+- `Node.js中的Buffer`：可以直接修改和访问其内容，`Buffer.buffer`返回`ArrayBuffer`
+
+- `ArrayBuffer`对象代表原始的二进制数据
+
+- `TypedArray`视图用来读写简单类型的二进制数据（ArrayBuffer），
+
+- `DataView`视图用来读写复杂类型的二进制数据(ArrayBuffer)。
+
+- Node中的`Buffer`类是以更优化和更适合Nodejs的方式实现了`Uint8Array` API，意思就是`Buffer`类其实是`TypedArray(Uint8Array)`的nodejs实现。
+
+  
