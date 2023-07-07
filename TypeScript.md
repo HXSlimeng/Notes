@@ -712,4 +712,18 @@ function restoreCtx(target: any, propertyKey: any, descriptor: PropertyDescripto
   }
   ```
 
-  
+
+### 关键字
+
+- `static`:只能通过类本身调用
+
+  ```typescript
+  class CustomClass{
+      static fun(){}
+  }
+  CustomClass.fun()
+  ```
+
+- `private`:只能在类内部使用
+
+- `public`:可以用来 constructor时 进行简写
