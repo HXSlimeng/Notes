@@ -6,9 +6,9 @@
   - git branch <分支名> ，正儿八经的新建分支。
   - git checkout <分支名> ，切换分支。
   - git push origin <分支名> ,把本地分支推到远端，让远端也有一个你的分支，用来后面提交你的代码。
-  - git checkout -b , <分支名>，新建分支并切换到该分支
+  - git checkout -b , <分支名>，远程分支名 新建分支并切换到该分支
   - git branch -d <分支名> ，删除本地分支
-  - git branch origin --delete <分支名>
+  - git push origin --delete <分支名>
   ##### 提交
   - git status ,查看自己写了哪些东西。
   - git add .

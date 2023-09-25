@@ -8,9 +8,9 @@
 
 - `files`:指定哪些包被推送到npm,`.npmignore`内的定义优先级高于该配置
 
-- 
-
   > 可以理解为.npmignore为黑名单，files为白名单，files优先级最高
+
+- `script`:当需要多个任务并行启动时 使用`&`,继发执行可以使用`&&`
 
 ### 2. npm pack
 

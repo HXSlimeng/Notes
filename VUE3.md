@@ -23,3 +23,18 @@
    - ref创建`基本类型`的`响应式数据`会先将数据通过`{value:值}`的形式包裹起来直接使用`defineProperty`
    - ref创建`引用类型` 会直接调 `reactive` 生成一个`proxy`对象
 
+3. attr和prop的区别
+
+   attr不带: 也就是不是v-bind传递的
+
+   ```html
+   <myComp attr="attr"></myComp>
+   ```
+
+   prop通过v-bind传递的
+
+   ```html
+   <myComp :prop="prop"></myComp>
+   ```
+
+   
