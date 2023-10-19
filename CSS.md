@@ -19,3 +19,17 @@
 
 ```
 
+移动端元素滑动保持元素在中间的属性
+
+```css
+.father{
+	scroll-snap-type:x mandatory;
+    
+}
+.fater > .son{
+	scroll-snap-align:center;        
+    }
+
+
+```
+
