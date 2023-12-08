@@ -68,7 +68,39 @@ for line, n := range counts {
   delete(m,'key')
   ```
 
-`fmt`：`printf`是指`print format`，`println` 是指 `print line`
+- `fmt`：`printf`是指`print format`，`println` 是指 `print line`
+
+​			`Fprint` 函数是一个格式化输出函数，它将指定的内容格式化后输出到指定的 `io.Writer` 接口中。这个接口可以是标准输出、文件、网络连接等
+
+​			`Print` 函数是一个简单的输出函数，它将指定的内容直接输出到标准输出（控制台）。
+
+​			`fmt.Sprint`是Go语言中的一个函数，它用于将多个值转换为字符串并拼接在一起
+
+- `bytes`:
+
+```go
+import (
+	"bytes"
+	"fmt"
+)
+func main() {
+	print(intsToString([]int{1, 2, 3}))
+}
+func intsToString(values []int) string {
+    var buf bytes.Buffer
+    buf.WriteByte('[')
+    for i, v := range values {
+        if i > 0 {
+            buf.WriteString(", ")
+        }
+        fmt.Fprintf(&buf, "%d", v)
+    }
+    buf.WriteByte(']')
+    return buf.String()
+}
+```
+
+
 
 ### 数据类型
 
@@ -285,3 +317,338 @@ func init() {
 
 ## 基础数据类型
 
+### 1. 整型
+
+>  1 byte 字节 = 8 bit 位,int8 表示 8位也就是1字节
+>
+> 两位 16进制 相当于 一字节 8 位 
+
+​	有符号整数：int8、int16、int32和int64
+
+​	无符号整数：uint8、uint16、uint32和uint64
+
+​	int、uint 对应特定cpu平台机器字大小的有符号和无符号整数
+
+- `Unicode`字符`rune`类型是和`int32`等价的类型，通常用于表示一个`Unicode`码点
+- 同样`byte`也是`uint8`类型的等价类型
+- `uintptr`没有指定具体的bit大小但是足以容纳指针,uintptr类型只有在底层编程时才需要
+- 16 进制表示`0xFFF`,八进制表示`0666`以0开头
+
+- 算数运算的结果、如果需要更多的`bit`位表示，则超出高位的`bit`位将被丢弃
+
+  ```go
+  var u uint8 = 255
+  fmt.Println(u, u+1, u*u) // "255 0 1"
+  //11111110 00000001
+  var i int8 = 127
+  fmt.Println(i, i+1, i*i) // "127 -128 1"
+  ```
+
+- 可以使用`fmt.Printf`控制输出的进制格式
+
+- 单引号`''`通常来表示`rune`类型，展示`unicode`
+
+- > %之后的`[1]`副词告诉Printf函数再次使用第一个操作数。第二，%后的`#`副词告诉Printf在用%o、%x或%X输出时生成0、0x或0X前缀。
+
+  ```go
+  o := 0666
+  fmt.Printf("%d %[1]o %#[1]o\n", o) // "438 666 0666"
+  x := int64(0xdeadbeef)
+  fmt.Printf("%d %[1]x %#[1]x %#[1]X\n", x)
+  // Output:
+  // 3735928559 deadbeef 0xdeadbeef 0XDEADBEEF
+  ```
+
+#### 运算符
+
+​	位运算
+
+一个`x<<n`左移运算等价于乘以$2^n$，一个`x>>n`右移运算等价于除以$2^n$
+
+```go
+&      位运算 AND
+|      位运算 OR
+^      位运算 XOR
+&^     位清空（AND NOT）
+<<     左移
+>>     右移
+
+var x uint8 = 1<<1 | 1<<5
+var y uint8 = 1<<1 | 1<<2
+
+fmt.Printf("%08b\n", x) // "00100010", the set {1, 5}
+fmt.Printf("%08b\n", y) // "00000110", the set {1, 2}
+
+fmt.Printf("%08b\n", x&y)  // "00000010", the intersection {1}
+fmt.Printf("%08b\n", x|y)  // "00100110", the union {1, 2, 5}
+fmt.Printf("%08b\n", x^y)  // "00100100", the symmetric difference {2, 5}
+fmt.Printf("%08b\n", x&^y) // "00100000", the difference {5}
+
+for i := uint(0); i < 8; i++ {
+    if x&(1<<i) != 0 { // membership test
+        fmt.Println(i) // "1", "5"
+    }
+}
+
+fmt.Printf("%08b\n", x<<1) // "01000100", the set {2, 6}
+fmt.Printf("%08b\n", x>>1) // "00010001", the set {0, 4}
+
+```
+
+### 2. 浮点数
+
+​	`float64` `float32`,优先使用`float64`,因为float32的有效bit位只有23个，其它的bit位用于指数和符号；当整数大于23bit能表达的范围时，float32的表示将出现误差
+
+```go
+for x := 0; x < 8; x++ {
+    fmt.Printf("x = %d e^x = %8.3f\n", x, math.Exp(float64(x)))
+}
+```
+
+> 上面代码打印e的幂，打印精度是小数点后三个小数精度和8个字符宽度：
+
+### 3. 复数
+
+​	`complex64` `complex128`分别对应float32和float64两种浮点数精度
+
+### 4. 字符串	
+
+- 内置的len函数可以返回一个字符串中的==字节数目==（不是rune字符数目）
+- 单引号在go语言中表示golang中的rune(int32)类型
+
+- 索引操作s[i]返回第i个字节的字节值，i必须满足0 ≤ i< len(s)条件约束。
+
+  ```go
+  s := "hello, world"
+  fmt.Println(len(s))     // "12"
+  fmt.Println(s[0], s[7]) // "104 119" ('h' and 'w')
+  ```
+
+- 字符串可以用==和<进行比较；比较通过逐个字节比较完成的，因此比较的结果是字符串自然编码的顺序。
+
+- 字符串的值是不可变的：一个字符串包含的字节序列永远不会被改变，当然我们也可以给一个字符串变量分配一个新字符串值
+
+- `rune`
+
+#### 字符串面值``` `
+
+```go
+\a      响铃
+\b      退格
+\f      换页
+\n      换行
+\r      回车
+\t      制表符
+\v      垂直制表符
+\'      单引号（只用在 '\'' 形式的rune符号面值中）
+\"      双引号（只用在 "..." 形式的字符串面值中）
+\\      反斜杠
+```
+
+- 可以通过十六进制或八进制转义在字符串面值中包含任意的字节。一个十六进制的转义形式是`\xhh`，其中两个h表示十六进制数字（大写或小写都可以）。一个八进制转义形式是`\ooo`，包含三个八进制的o数字（0到7），但是不能超过`\377`（译注：对应一个字节的范围，十进制为255
+
+#### 编码
+
+`Unicode码点`:每个符号都分配一个唯一的`Unicode码点`，`Unicode码点`对应Go语言中的`rune`整数类型
+
+Go语言字符串面值中的Unicode转义字符让我们可以通过Unicode码点输入特殊的字符。有两种形式：`\uhhhh`对应16bit的码点值，`\Uhhhhhhhh`对应32bit的码点值，其中h是一个十六进制数字；一般很少需要使用32bit的形式。每一个对应码点的UTF8编码
+
+下面的字母串面值都表示相同的值：
+
+> 各种编码并
+
+```go
+"世界"
+"\xe4\xb8\x96\xe7\x95\x8c" //A
+"\u4e16\u754c"
+"\U00004e16\U0000754c"
+"%e4%b8%96%e7%95%8c"
+```
+
+- "\xe4\xb8\x96\xe7\x95\x8c" 是 UTF-8 编码格式的表示方式。
+- "\u4e16\u754c" 是 Unicode 编码格式的表示方式，使用了16进制表示。
+- "\U00004e16\U0000754c" 也是 Unicode 编码格式的表示方式，使用了32进制表示。
+- "%e4%b8%96%e7%95%8c“是`URL`编码
+- assic编码长度为1字节对应类型为int8
+
+```go
+import "unicode/utf8"
+
+//字符串包含13个字节，以UTF8形式编码，但是只对应9个Unicode字符
+s := "Hello, 世界"
+fmt.Println(len(s))                    // "13"
+fmt.Println(utf8.RuneCountInString(s)) // "9"
+
+//为了处理这些真实的字符，我们需要一个UTF8解码器。unicode/utf8包提供了该功能，我们可以这样使用：
+for i := 0; i < len(s); {
+    r, size := utf8.DecodeRuneInString(s[i:])
+    fmt.Printf("%d\t%c\n", i, r)
+    i += size
+}
+```
+
+> 每一个UTF8字符解码，不管是显式地调用utf8.DecodeRuneInString解码或是在range循环中隐式地解码，如果遇到一个`错误的UTF8编码输入`，将生成一个特别的Unicode字符`\uFFFD`，在印刷中这个符号通常是一个黑色六角或钻石形状，里面包含一个白色的问号"?"。当程序遇到这样的一个字符，通常是一个危险信号，说明输入并不是一个完美没有错误的UTF8字符串。
+
+#### 字符串和数字的转换
+
+```go
+x := 123
+y := fmt.Sprintf("%d", x)
+
+fmt.Println(y, strconv.Itoa(x)) // "123 123"
+//进制转换
+fmt.Println(strconv.FormatInt(int64(x), 2)) // "1111011"
+
+s := fmt.Sprintf("x=%b", x) // "x=1111011"
+x, err := strconv.Atoi("123")             // x is an int
+y, err := strconv.ParseInt("123", 10, 64) // base 10, up to 64 bits
+```
+
+> ParseInt函数的第三个参数是用于指定整型数的大小；例如16表示int16，0则表示int。在任何情况下，返回的结果y总是int64类型，你可以通过强制类型转换将它转为更小的整数类型。
+
+### 常量
+
+- 常量不声明类型可以有更高的计算精度
+
+#### 常量生成器 iota （可以理解为常量）
+
+`iota`从0开始递增 可以嵌入表达式
+
+为第一个声明类型，后续所有变量的类型
+
+```go
+type Flags uint
+
+const (
+    FlagUp Flags = 1 << iota  1 // is up
+    FlagBroadcast             2// supports broadcast access capability
+    FlagLoopback              4// is a loopback interface
+    FlagPointToPoint          8// belongs to a point-to-point link
+    FlagMulticast            16// supports multicast access capability
+)
+const (
+    _ = 1 << (10 * iota)
+    KiB // 1024
+    MiB // 1048576
+    GiB // 1073741824
+    TiB // 1099511627776             (exceeds 1 << 32)
+    PiB // 1125899906842624
+    EiB // 1152921504606846976
+    ZiB // 1180591620717411303424    (exceeds 1 << 64)
+    YiB // 1208925819614629174706176
+)
+```
+
+## 复合数据类型
+
+### 数组
+
+1. 特点
+   - 数组的长度是固定的
+   - 数组的长度是数组类型的一个组成部分，因此`[3]int`和`[4]int`是两种不同的数组类型
+   - 可以通过`==` `!=`比较，需要类型相同 且每个元素相等/不相等
+   - 可以通过指针直接清零
+   - 是一个值类型、赋值或传递会进行一次完整的复制
+   - 无法动态增长或缩小
+
+2. 声明方式
+
+   ```go
+   //1
+   var a [len]Type
+   //2
+   q := [...]int{1, 2, 3} //数组长度根据初始化值得个数来计算得
+   //3
+   type Currency int
+   
+   const (
+       USD Currency = iota // 美元
+       EUR                 // 欧元
+       GBP                 // 英镑
+       RMB                 // 人民币
+   )
+   
+   symbol := [...]string{USD: "$", EUR: "€", GBP: "￡", RMB: "￥"}
+   
+   fmt.Println(RMB, symbol[RMB]) // "3 ￥"
+   //4
+   r := [...]int{99: -1} //长度为100 最后一个元素为 -1
+   ```
+
+3. 在Go语言中，直接操作数组和操作数组的指针有一些区别。
+   1. 直接操作数组：当你直接操作数组时，你实际上是在对数组进行值拷贝。这意味着对数组的修改不会影响原始数组。
+
+   2. 操作数组的指针：当你操作数组的指针时，你可以直接访问和修改数组的元素，而不需要进行值拷贝。通过指针，你可以在函数之间共享数组，并且对数组的修改会影响到原始数组。
+
+      ```go
+      package main
+      
+      import "fmt"
+      
+      func modifyArray(arr [3]int) {
+          arr[0] = 100
+      }
+      
+      func modifyArrayPtr(arrPtr *[3]int) {
+          arrPtr[0] = 100
+      }
+      
+      func main() {
+          arr := [3]int{1, 2, 3}
+      
+          fmt.Println("Original array:", arr)
+          //Original array: [1 2 3]
+      
+          modifyArray(arr)
+          fmt.Println("After modifyArray:", arr)
+          //After modifyArray: [1 2 3]
+      
+          modifyArrayPtr(&arr)
+          fmt.Println("After modifyArrayPtr:", arr)
+          //After modifyArrayPtr: [100 2 3]
+      }
+      
+      
+      
+      ```
+
+### 切片Slice
+
+1. 特点
+   - 变长的序列，每个元素都有相同的类型
+   - 是引用类型，在赋值或传递给函数时只会复制指向底层数组的指针，不会复制底层数组的内容
+   - 内置的`len`和`cap`函数分别返回`slice`的长度和容量
+   - 指针指向第一个slice元素对应的底层数组元素的地址
+   - `copy`方法可以方便的将一个`slice`复制到另一个相同类型的`slice`
+
+2. 声明 不定长
+
+   ```go
+   var runes []rune
+   var test []string{1,2,3,4}
+   ```
+
+   ![](https://gopl-zh.github.io/images/ch4-01.png)
+
+3. `append`函数用于给`slice`追加元素
+
+4. 使用`make`创建`slice`
+
+   - 可以指定切片的长度和容量
+   - 可以初始化各元素为零值
+   - 返回引用
+
+5. `slice`方法实现
+
+   ```go
+   //pop
+   stack = stack[:len(stack)-1] 
+   //删除中间的元素
+   func remove(slice []int, i int) []int {
+       copy(slice[i:], slice[i+1:])
+       return slice[:len(slice)-1]
+   }
+   
+   ```
+
+   
