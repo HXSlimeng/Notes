@@ -1,16 +1,16 @@
 # GoLang
 
-​	Go是一门编译型语言，Go 语言的工具链将源代码及其依赖转换成计算机的机器指令（译注：静 态编译）
+​ Go 是一门编译型语言，Go 语言的工具链将源代码及其依赖转换成计算机的机器指令（译注：静 态编译）
 
-​	Go语言最有意思并且最新奇的特性就是对并发编程的支持
+​ Go 语言最有意思并且最新奇的特性就是对并发编程的支持
 
-​	原生支持Unicode
+​ 原生支持 Unicode
 
-- Go语言中，所有的函数参数都是值拷贝传入的，函数参数将不再是函数调用时的原始变量
+- Go 语言中，所有的函数参数都是值拷贝传入的，函数参数将不再是函数调用时的原始变量
 
 ### 工具包
 
-`math/rand`:生成随机数的方法，`rand.Intn(n)`生成0-n的一个随机数
+`math/rand`:生成随机数的方法，`rand.Intn(n)`生成 0-n 的一个随机数
 
 `strconv`:`Itoa`可以将`int`转为`string`
 
@@ -29,9 +29,9 @@ for input.Scan() {
 
 `os`：文件类型 `*os.File`
 
-​	`os.Stdin`:指向标准输入文件的指针
+​ `os.Stdin`:指向标准输入文件的指针
 
-​	`os.Stdin`、`os.Stdout` 和 `os.Stderr` 分别表示程序的标准输入、标准输出和标准错误流。它们是 `os` 包中的三个常量，分别对应于系统中的标准输入、标准输出和标准错误流。
+​ `os.Stdin`、`os.Stdout` 和 `os.Stderr` 分别表示程序的标准输入、标准输出和标准错误流。它们是 `os` 包中的三个常量，分别对应于系统中的标准输入、标准输出和标准错误流。
 
 ```go
  f, err := os.Open(arg)
@@ -48,8 +48,6 @@ for line, n := range counts {
         }
     }
 ```
-
-
 
 ### 内置函数
 
@@ -72,11 +70,11 @@ for line, n := range counts {
 
 - `fmt`：`printf`是指`print format`，`println` 是指 `print line`
 
-​			`Fprint` 函数是一个格式化输出函数，它将指定的内容格式化后输出到指定的 `io.Writer` 接口中。这个接口可以是标准输出、文件、网络连接等
+​ `Fprint` 函数是一个格式化输出函数，它将指定的内容格式化后输出到指定的 `io.Writer` 接口中。这个接口可以是标准输出、文件、网络连接等
 
-​			`Print` 函数是一个简单的输出函数，它将指定的内容直接输出到标准输出（控制台）。
+​ `Print` 函数是一个简单的输出函数，它将指定的内容直接输出到标准输出（控制台）。
 
-​			`fmt.Sprint`是Go语言中的一个函数，它用于将多个值转换为字符串并拼接在一起
+​ `fmt.Sprint`是 Go 语言中的一个函数，它用于将多个值转换为字符串并拼接在一起
 
 - `bytes`:
 
@@ -102,25 +100,39 @@ func intsToString(values []int) string {
 }
 ```
 
+| formatString | 说明                                   |
+| ------------ | -------------------------------------- |
+| %v：         | 默认格式，根据值的类型进行格式化输出   |
+| %d：         | 十进制整数。                           |
+| %f：         | 浮点数。                               |
+| %s：         | 字符串。                               |
+| %t：         | 布尔值。                               |
+| %p：         | 指针值。                               |
+| %x：         | 十六进制表示的整数。                   |
+| %b：         | 二进制表示的整数。                     |
+| %10d：       | 指定输出宽度为 10 个字符的十进制整数。 |
+| %.2f：       | 指定浮点数的小数点后保留 2 位。        |
+| %s：         | 指定字符串的输出宽度。                 |
 
+[golang 说明文档](https://pkg.go.dev/fmt)
 
 ### 数据类型
 
-`var`变量声明，声明时直接初始化,如果没有显式初始化则被隐式赋予`零值(zero value)`s数值类型是0，字符串类型是“”
+`var`变量声明，声明时直接初始化,如果没有显式初始化则被隐式赋予`零值(zero value)`s 数值类型是 0，字符串类型是“”
 
-`nil`:相当于其他语言的null
+`nil`:相当于其他语言的 null
 
-`slice`切片，可以使用`s[m:n]`获取子序列，省略m/n 会默认传入`0`或`len[s]`
+`slice`切片，可以使用`s[m:n]`获取子序列，省略 m/n 会默认传入`0`或`len[s]`
 
-`chan`:声明类型 `chan string`指的是传递string类型的信道
+`chan`:声明类型 `chan string`指的是传递 string 类型的信道
 
-指针：指针是一种直接存储了变量的内存地址的数据类型，在go语言中，指针是可见的内存地址，`&`操作符可以返回一个变量的内存地址，并且`*`操作符可以获取指针指向的变量内容，但是在Go语言里没有指针运算，也就是不能像c语言里可以对指针进行加或减操作
+指针：指针是一种直接存储了变量的内存地址的数据类型，在 go 语言中，指针是可见的内存地址，`&`操作符可以返回一个变量的内存地址，并且`*`操作符可以获取指针指向的变量内容，但是在 Go 语言里没有指针运算，也就是不能像 c 语言里可以对指针进行加或减操作
 
 ### 语法
 
 - 短变量声明`:=`，只能用在函数内部，不能用于包变量
 
-- for循环
+- for 循环
 
   ```go
   for initialization; condition; post {
@@ -141,11 +153,11 @@ func intsToString(values []int) string {
       }
   ```
 
-- 空标识符`_`,可以用作for循环占位
+- 空标识符`_`,可以用作 for 循环占位
 
 - `make` 函数用于`动态分配内存空间`，它会根据提供的参数自动计算所需的空间大小，并返回一个指向该内存区域的指针。使用 `make` 分配内存空间可以确保内存空间被正确初始化，避免因未初始化的内存空间导致的数据竞争或其他问题。
 
-- `switch`:无tag switch
+- `switch`:无 tag switch
 
   ```go
   func Signum(x int) int {
@@ -177,8 +189,6 @@ func intsToString(values []int) string {
   if i:=20;i == vari{/* ...*/}
   ```
 
-  
-
 ### 测试脚本
 
 - 文件名：module_test.go
@@ -186,11 +196,11 @@ func intsToString(values []int) string {
 
 ### 杂项
 
-查看go安装目录`go list -f '{{.Target}}' `
+查看 go 安装目录`go list -f '{{.Target}}' `
 
 `go run src/**.go &`在末尾加入一个`&`可以让程序简单地跑在后台
 
-`go doc`godoc这个工具可以让你直接在本地命令行阅读标准库的文档 example `go doc http.ListenAndServe`
+`go doc`godoc 这个工具可以让你直接在本地命令行阅读标准库的文档 example `go doc http.ListenAndServe`
 
 - 获取键盘输入
 
@@ -205,26 +215,24 @@ func intsToString(values []int) string {
               fmt.Println(line)
           }
       }
-  
+
       if err := input.Err(); err != nil {
           fmt.Fprintf(os.Stderr, "dedup: %v\n", err)
           os.Exit(1)
       }
   }
-  
-  ```
 
-  
+  ```
 
 ## 程序结构
 
 ### 1. 命名
 
-​	如果一个名i在是大写字母开头的，那么它将会是导出的，可以被外部的包所访问
+​ 如果一个名 i 在是大写字母开头的，那么它将会是导出的，可以被外部的包所访问
 
 ### 2. 声明
 
-​	`package`说明该文件属于哪个包
+​ `package`说明该文件属于哪个包
 
 ### 3. 变量
 
@@ -232,12 +240,12 @@ func intsToString(values []int) string {
 
   不同数据类型对应的零值
 
-  |                        类型                        | 零值  |
-  | :------------------------------------------------: | :---: |
-  |                      布尔类型                      | false |
-  |                      数值类型                      |   0   |
-  |                     字符串类型                     |  “”   |
-  | 接口、引用类型（包括slice、指针、map、chan和函数） |  nil  |
+  |                         类型                         | 零值  |
+  | :--------------------------------------------------: | :---: |
+  |                       布尔类型                       | false |
+  |                       数值类型                       |   0   |
+  |                      字符串类型                      |  “”   |
+  | 接口、引用类型（包括 slice、指针、map、chan 和函数） |  nil  |
 
   ```go
   i, j := 0, 1
@@ -261,32 +269,32 @@ func intsToString(values []int) string {
   ```go
   var x int
   // *x 对应的类型 *int
-  
+
   var x int = 1
   var p = &x //p指针指向 x/ p指针保存了x变量的内存地址
   println(*p) // 1  *p 表示对应p指针指向的变量的值
   *p = 2
   println(x) // 2
-  
+
   func incr(p *int) int {
       *p++ // 非常重要：只是增加p指向的变量的值，并不改变p指针！！！
       return *p
   }
   ```
-  
+
 - new 函数
-  
-  使用`new(T)` 创建一个T类型的匿名变量，初始化为`T类型的零值`，然后返回`变量地址`，返回的指针类型为`*T`
+
+  使用`new(T)` 创建一个 T 类型的匿名变量，初始化为`T类型的零值`，然后返回`变量地址`，返回的指针类型为`*T`
 
 usage`p := new(int)   // p, *int 类型, 指向匿名的 int 变量`
 
-  - 要尽量避免大小为0的类型，可能导致Go语言的垃圾回收器有着不同的行为，`[0]int`与`struct{}`的地址可能相等
+- 要尽量避免大小为 0 的类型，可能导致 Go 语言的垃圾回收器有着不同的行为，`[0]int`与`struct{}`的地址可能相等
 
 - 变量的生命周期，`包变量` 的生命周期与程序的运行周期是一致的，`局部变量`会持续到该变量不被引用为止
 
-- go语言垃圾回收的基本思路：
+- go 语言垃圾回收的基本思路：
 
-  ​	从每个包级的变量和每个当前运行函数的每一个局部变量开始，通过指针或引用的访问路径遍历，是否可以找到该变量。如果不存在这样的访问路径，那么说明该变量是不可达的，也就是说它是否存在并不会影响程序后续的计算结果。
+  ​ 从每个包级的变量和每个当前运行函数的每一个局部变量开始，通过指针或引用的访问路径遍历，是否可以找到该变量。如果不存在这样的访问路径，那么说明该变量是不可达的，也就是说它是否存在并不会影响程序后续的计算结果。
 
 ### 3. 赋值
 
@@ -294,7 +302,7 @@ usage`p := new(int)   // p, *int 类型, 指向匿名的 int 变量`
 
    ```go
    x, y = y, x
-   
+
    a[i], a[j] = a[j], a[i]
    ```
 
@@ -302,11 +310,11 @@ usage`p := new(int)   // p, *int 类型, 指向匿名的 int 变量`
 
 `type 类型名字 底层类型` 名字首字母大写则可以在包外部使用
 
-- 对于每一个类型T，都有一个对应的类型转换操作T(x)，用于将x转为T类型（译注：如果T是指针类型，可能会需要用小括弧包装T，比如`(*int)(0)`）
+- 对于每一个类型 T，都有一个对应的类型转换操作 T(x)，用于将 x 转为 T 类型（译注：如果 T 是指针类型，可能会需要用小括弧包装 T，比如`(*int)(0)`）
 
 - 给类型设置方法
 
-  类型参数c出现在了函数名的前面，如下例子表示声明的是`Celsius`类型的一个名叫`String`的方法
+  类型参数 c 出现在了函数名的前面，如下例子表示声明的是`Celsius`类型的一个名叫`String`的方法
 
   ```go
   func (c Celsius) String() string { return fmt.Sprintf("%g°C", c) }
@@ -318,9 +326,9 @@ usage`p := new(int)   // p, *int 类型, 指向匿名的 int 变量`
 
 - 包的初始化过程：
 
-  如果包中含有多个.go源文件，它们将按照发给编译器的顺序进行初始化，Go语言的构建工具首先会将.go文件根据文件名排序，然后依次调用编译器编译。
+  如果包中含有多个.go 源文件，它们将按照发给编译器的顺序进行初始化，Go 语言的构建工具首先会将.go 文件根据文件名排序，然后依次调用编译器编译。
 
-  对于在包级别声明的变量，如果有初始化表达式则用表达式初始化，还有一些没有初始化表达式的，例如某些表格数据初始化并不是一个简单的赋值过程。在这种情况下，我们可以用一个特殊的`init`初始化函数来简化初始化工作。每个文件都可以包含多个init初始化函数
+  对于在包级别声明的变量，如果有初始化表达式则用表达式初始化，还有一些没有初始化表达式的，例如某些表格数据初始化并不是一个简单的赋值过程。在这种情况下，我们可以用一个特殊的`init`初始化函数来简化初始化工作。每个文件都可以包含多个 init 初始化函数
 
 ### 6. 作用域
 
@@ -351,20 +359,20 @@ func init() {
 
 ### 1. 整型
 
->  1 byte 字节 = 8 bit 位,int8 表示 8位也就是1字节
+> 1 byte 字节 = 8 bit 位,int8 表示 8 位也就是 1 字节
 >
-> 两位 16进制 相当于 一字节 8 位 
+> 两位 16 进制 相当于 一字节 8 位
 
-​	有符号整数：int8、int16、int32和int64
+​ 有符号整数：int8、int16、int32 和 int64
 
-​	无符号整数：uint8、uint16、uint32和uint64
+​ 无符号整数：uint8、uint16、uint32 和 uint64
 
-​	int、uint 对应特定cpu平台机器字大小的有符号和无符号整数
+​ int、uint 对应特定 cpu 平台机器字大小的有符号和无符号整数
 
 - `Unicode`字符`rune`类型是和`int32`等价的类型，通常用于表示一个`Unicode`码点
 - 同样`byte`也是`uint8`类型的等价类型
-- `uintptr`没有指定具体的bit大小但是足以容纳指针,uintptr类型只有在底层编程时才需要
-- 16 进制表示`0xFFF`,八进制表示`0666`以0开头
+- `uintptr`没有指定具体的 bit 大小但是足以容纳指针,uintptr 类型只有在底层编程时才需要
+- 16 进制表示`0xFFF`,八进制表示`0666`以 0 开头
 
 - 算数运算的结果、如果需要更多的`bit`位表示，则超出高位的`bit`位将被丢弃
 
@@ -380,7 +388,7 @@ func init() {
 
 - 单引号`''`通常来表示`rune`类型，展示`unicode`
 
-- > %之后的`[1]`副词告诉Printf函数再次使用第一个操作数。第二，%后的`#`副词告诉Printf在用%o、%x或%X输出时生成0、0x或0X前缀。
+- > %之后的`[1]`副词告诉 Printf 函数再次使用第一个操作数。第二，%后的`#`副词告诉 Printf 在用%o、%x 或%X 输出时生成 0、0x 或 0X 前缀。
 
   ```go
   o := 0666
@@ -393,7 +401,7 @@ func init() {
 
 #### 运算符
 
-​	位运算
+​ 位运算
 
 一个`x<<n`左移运算等价于乘以$2^n$，一个`x>>n`右移运算等价于除以$2^n$
 
@@ -429,7 +437,7 @@ fmt.Printf("%08b\n", x>>1) // "00010001", the set {0, 4}
 
 ### 2. 浮点数
 
-​	`float64` `float32`,优先使用`float64`,因为float32的有效bit位只有23个，其它的bit位用于指数和符号；当整数大于23bit能表达的范围时，float32的表示将出现误差
+​ `float64` `float32`,优先使用`float64`,因为 float32 的有效 bit 位只有 23 个，其它的 bit 位用于指数和符号；当整数大于 23bit 能表达的范围时，float32 的表示将出现误差
 
 ```go
 for x := 0; x < 8; x++ {
@@ -437,18 +445,18 @@ for x := 0; x < 8; x++ {
 }
 ```
 
-> 上面代码打印e的幂，打印精度是小数点后三个小数精度和8个字符宽度：
+> 上面代码打印 e 的幂，打印精度是小数点后三个小数精度和 8 个字符宽度：
 
 ### 3. 复数
 
-​	`complex64` `complex128`分别对应float32和float64两种浮点数精度
+​ `complex64` `complex128`分别对应 float32 和 float64 两种浮点数精度
 
-### 4. 字符串	
+### 4. 字符串
 
-- 内置的len函数可以返回一个字符串中的==字节数目==（不是rune字符数目）
-- 单引号在go语言中表示golang中的rune(int32)类型
+- 内置的 len 函数可以返回一个字符串中的==字节数目==（不是 rune 字符数目）
+- 单引号在 go 语言中表示 golang 中的 rune(int32)类型
 
-- 索引操作s[i]返回第i个字节的字节值，i必须满足0 ≤ i< len(s)条件约束。
+- 索引操作 s[i]返回第 i 个字节的字节值，i 必须满足 0 ≤ i< len(s)条件约束。
 
   ```go
   s := "hello, world"
@@ -477,13 +485,13 @@ for x := 0; x < 8; x++ {
 \\      反斜杠
 ```
 
-- 可以通过十六进制或八进制转义在字符串面值中包含任意的字节。一个十六进制的转义形式是`\xhh`，其中两个h表示十六进制数字（大写或小写都可以）。一个八进制转义形式是`\ooo`，包含三个八进制的o数字（0到7），但是不能超过`\377`（译注：对应一个字节的范围，十进制为255
+- 可以通过十六进制或八进制转义在字符串面值中包含任意的字节。一个十六进制的转义形式是`\xhh`，其中两个 h 表示十六进制数字（大写或小写都可以）。一个八进制转义形式是`\ooo`，包含三个八进制的 o 数字（0 到 7），但是不能超过`\377`（译注：对应一个字节的范围，十进制为 255
 
 #### 编码
 
-`Unicode码点`:每个符号都分配一个唯一的`Unicode码点`，`Unicode码点`对应Go语言中的`rune`整数类型
+`Unicode码点`:每个符号都分配一个唯一的`Unicode码点`，`Unicode码点`对应 Go 语言中的`rune`整数类型
 
-Go语言字符串面值中的Unicode转义字符让我们可以通过Unicode码点输入特殊的字符。有两种形式：`\uhhhh`对应16bit的码点值，`\Uhhhhhhhh`对应32bit的码点值，其中h是一个十六进制数字；一般很少需要使用32bit的形式。每一个对应码点的UTF8编码
+Go 语言字符串面值中的 Unicode 转义字符让我们可以通过 Unicode 码点输入特殊的字符。有两种形式：`\uhhhh`对应 16bit 的码点值，`\Uhhhhhhhh`对应 32bit 的码点值，其中 h 是一个十六进制数字；一般很少需要使用 32bit 的形式。每一个对应码点的 UTF8 编码
 
 下面的字母串面值都表示相同的值：
 
@@ -498,10 +506,10 @@ Go语言字符串面值中的Unicode转义字符让我们可以通过Unicode码�
 ```
 
 - "\xe4\xb8\x96\xe7\x95\x8c" 是 UTF-8 编码格式的表示方式。
-- "\u4e16\u754c" 是 Unicode 编码格式的表示方式，使用了16进制表示。
-- "\U00004e16\U0000754c" 也是 Unicode 编码格式的表示方式，使用了32进制表示。
+- "\u4e16\u754c" 是 Unicode 编码格式的表示方式，使用了 16 进制表示。
+- "\U00004e16\U0000754c" 也是 Unicode 编码格式的表示方式，使用了 32 进制表示。
 - "%e4%b8%96%e7%95%8c“是`URL`编码
-- assic编码长度为1字节对应类型为int8
+- assic 编码长度为 1 字节对应类型为 int8
 
 ```go
 import "unicode/utf8"
@@ -519,7 +527,7 @@ for i := 0; i < len(s); {
 }
 ```
 
-> 每一个UTF8字符解码，不管是显式地调用utf8.DecodeRuneInString解码或是在range循环中隐式地解码，如果遇到一个`错误的UTF8编码输入`，将生成一个特别的Unicode字符`\uFFFD`，在印刷中这个符号通常是一个黑色六角或钻石形状，里面包含一个白色的问号"?"。当程序遇到这样的一个字符，通常是一个危险信号，说明输入并不是一个完美没有错误的UTF8字符串。
+> 每一个 UTF8 字符解码，不管是显式地调用 utf8.DecodeRuneInString 解码或是在 range 循环中隐式地解码，如果遇到一个`错误的UTF8编码输入`，将生成一个特别的 Unicode 字符`\uFFFD`，在印刷中这个符号通常是一个黑色六角或钻石形状，里面包含一个白色的问号"?"。当程序遇到这样的一个字符，通常是一个危险信号，说明输入并不是一个完美没有错误的 UTF8 字符串。
 
 #### 字符串和数字的转换
 
@@ -536,7 +544,7 @@ x, err := strconv.Atoi("123")             // x is an int
 y, err := strconv.ParseInt("123", 10, 64) // base 10, up to 64 bits
 ```
 
-> ParseInt函数的第三个参数是用于指定整型数的大小；例如16表示int16，0则表示int。在任何情况下，返回的结果y总是int64类型，你可以通过强制类型转换将它转为更小的整数类型。
+> ParseInt 函数的第三个参数是用于指定整型数的大小；例如 16 表示 int16，0 则表示 int。在任何情况下，返回的结果 y 总是 int64 类型，你可以通过强制类型转换将它转为更小的整数类型。
 
 ### 常量
 
@@ -544,7 +552,7 @@ y, err := strconv.ParseInt("123", 10, 64) // base 10, up to 64 bits
 
 #### 常量生成器 iota （可以理解为常量）
 
-`iota`从0开始递增 可以嵌入表达式
+`iota`从 0 开始递增 可以嵌入表达式
 
 为第一个声明类型，后续所有变量的类型
 
@@ -576,6 +584,7 @@ const (
 ### 数组
 
 1. 特点
+
    - 数组的长度是固定的
    - 数组的长度是数组类型的一个组成部分，因此`[3]int`和`[4]int`是两种不同的数组类型
    - 可以通过`==` `!=`比较，需要类型相同 且每个元素相等/不相等
@@ -592,65 +601,67 @@ const (
    q := [...]int{1, 2, 3} //数组长度根据初始化值得个数来计算得
    //3
    type Currency int
-   
+
    const (
        USD Currency = iota // 美元
        EUR                 // 欧元
        GBP                 // 英镑
        RMB                 // 人民币
    )
-   
+
    symbol := [...]string{USD: "$", EUR: "€", GBP: "￡", RMB: "￥"}
-   
+
    fmt.Println(RMB, symbol[RMB]) // "3 ￥"
    //4
    r := [...]int{99: -1} //长度为100 最后一个元素为 -1
    ```
 
-3. 在Go语言中，直接操作数组和操作数组的指针有一些区别。
+3. 在 Go 语言中，直接操作数组和操作数组的指针有一些区别。
+
    1. 直接操作数组：当你直接操作数组时，你实际上是在对数组进行值拷贝。这意味着对数组的修改不会影响原始数组。
 
    2. 操作数组的指针：当你操作数组的指针时，你可以直接访问和修改数组的元素，而不需要进行值拷贝。通过指针，你可以在函数之间共享数组，并且对数组的修改会影响到原始数组。
 
       ```go
       package main
-      
+
       import "fmt"
-      
+
       func modifyArray(arr [3]int) {
           arr[0] = 100
       }
-      
+
       func modifyArrayPtr(arrPtr *[3]int) {
           arrPtr[0] = 100
       }
-      
+
       func main() {
           arr := [3]int{1, 2, 3}
-      
+
           fmt.Println("Original array:", arr)
           //Original array: [1 2 3]
-      
+
           modifyArray(arr)
           fmt.Println("After modifyArray:", arr)
           //After modifyArray: [1 2 3]
-      
+
           modifyArrayPtr(&arr)
           fmt.Println("After modifyArrayPtr:", arr)
           //After modifyArrayPtr: [100 2 3]
       }
-      
-      
-      
+
+
+
       ```
 
-### 切片Slice
+### 切片 Slice
 
 1. 特点
+
    - 变长的序列，每个元素都有相同的类型
    - 是引用类型，在赋值或传递给函数时只会复制指向底层数组的指针，不会复制底层数组的内容
    - 内置的`len`和`cap`函数分别返回`slice`的长度和容量
-   - 指针指向第一个slice元素对应的底层数组元素的地址
+   - 指针指向第一个 slice 元素对应的底层数组元素的地址
    - `copy`方法可以方便的将一个`slice`复制到另一个相同类型的`slice`
 
 2. 声明 不定长
@@ -674,15 +685,14 @@ const (
 
    ```go
    //pop
-   stack = stack[:len(stack)-1] 
+   stack = stack[:len(stack)-1]
    //删除中间的元素
    func remove(slice []int, i int) []int {
        copy(slice[i:], slice[i+1:])
        return slice[:len(slice)-1]
    }
-   
-   ```
 
+   ```
 
 6. 可以使用`sort.Strings([]string)` 对元素为`string`类型的`slice`切片进行排序
 
@@ -690,7 +700,7 @@ const (
 
 特点：
 
-- key有相同的类型，val有相同的类型
+- key 有相同的类型，val 有相同的类型
 - 元素不可以取址
 
 声明：
@@ -707,22 +717,22 @@ ages := map[string]int{
 //判断该key是否存在
 if _, ok := ages["test3"]; !ok {/*。。。*/}
 //删除元素
-delete(ages, "alice") 
+delete(ages, "alice")
 ```
 
 ### struct
 
 特点
 
-- 一个命名为S的结构体类型将不能再包含S类型的成员：因为一个聚合的值不能包含它自身。（该限制同样适用于数组。）
-- 但是S类型的结构体可以包含`*S`指针类型的成员，
-- 可比较，可以用于map的key类型
+- 一个命名为 S 的结构体类型将不能再包含 S 类型的成员：因为一个聚合的值不能包含它自身。（该限制同样适用于数组。）
+- 但是 S 类型的结构体可以包含`*S`指针类型的成员，
+- 可比较，可以用于 map 的 key 类型
 - 匿名嵌入
 
 声明：
 
 ```go
-//1. 
+//1.
 //如果相邻的成员类型如果相同的话可以被合并到一行
 type Employee struct {
     ID            int
@@ -768,9 +778,9 @@ w.Raduis = 20 //可以直接赋值
 
 ### json
 
-将go语言中的结构体`slice`转为`JSON`的过程叫`编组(marshaling)`
+将 go 语言中的结构体`slice`转为`JSON`的过程叫`编组(marshaling)`
 
-将go语言数据转换为`JSON` `json.Marshal` ,反之使用 `json.Unmarshal`
+将 go 语言数据转换为`JSON` `json.Marshal` ,反之使用 `json.Unmarshal`
 
 ```go
 //紧凑形式
@@ -824,5 +834,77 @@ type User struct {
 
 流式解码器 `json.NewDecoder(resp.Body).Decode(&result)`
 
-### 文本和html模板
+### 文本和 html 模板
 
+使用：
+
+- 使用 `template.Must` 辅助函数避免模板解析失败
+- 使用 `template.New(name)`创建并返回一个模板
+- 使用 `Func` 方法将自定义函数注册到模板中
+- 调用 `Parse` 函数分析模板
+- 使用 `report.Execute(os.Stdout, result)` 将结果输出到控制台
+- 模板中`{{range .Items}}`和`{{end}}`对应一个循环`action`
+
+```go
+type IssuesSearchResult struct {
+    TotalCount int `json:"total_count"`
+    Items          []*Issue
+    IncompleteResults bool `json:"incomplete_results"`
+}
+
+type Issue struct {
+    Number    int
+    HTMLURL   string `json:"html_url"`
+    Title     string
+    State     string
+    User      *User
+    CreatedAt time.Time `json:"created_at"`
+    Body      string    // in Markdown format
+}
+
+type User struct {
+    Login   string
+    HTMLURL string `json:"html_url"`
+}
+const templ = `{{.TotalCount}} issues:
+{{range .Items}}----------------------------------------
+Number: {{.Number}}
+User:   {{.User.Login}}
+Title:  {{.Title | printf "%.64s"}}
+Age:    {{.CreatedAt | daysAgo}} days
+{{end}}
+{{.IncompleteResults}}
+`
+func main() {
+    report := template.Must(template.New("report").Funcs(template.FuncMap{"daysAgo": daysAgo}).Parse(templ))
+    searchBox := []string{"https://github.com/wangduanduan/jsplumb-chinese-tutorial"}
+    result, err := SearchIssues(searchBox)
+    if err != nil {
+        log.Fatal(err)
+    }
+    report.Execute(os.Stdout, result)
+}
+```
+
+## 函数
+
+特点：
+
+- 实参通过值得方式传递，如果实参包括引用类型，如指针，slice(切片)、map、function、channel 等类型，实参可能会由于函数的间接引用被修改
+- 没有函数体的函数声明、表示该函数不是以 Go 实现的，这样的声明定义了函数签名
+
+  ```go
+  package math
+  func Sin(x float64) float //implemented in assembly language
+  ```
+
+特殊返回值命名
+
+```go
+func tf(x,y int)(sum int)  {
+    sum = x + y
+    return
+}
+```
+
+> 该情况下 返回值被声明为一个`sum`的零值
