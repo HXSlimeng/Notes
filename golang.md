@@ -6,6 +6,8 @@
 
 ​	原生支持Unicode
 
+- Go语言中，所有的函数参数都是值拷贝传入的，函数参数将不再是函数调用时的原始变量
+
 ### 工具包
 
 `math/rand`:生成随机数的方法，`rand.Intn(n)`生成0-n的一个随机数
@@ -169,6 +171,12 @@ func intsToString(values []int) string {
   }()
   ```
 
+- `if`语句行内变量也属于局部变量
+
+  ```go
+  if i:=20;i == vari{/* ...*/}
+  ```
+
   
 
 ### 测试脚本
@@ -183,6 +191,30 @@ func intsToString(values []int) string {
 `go run src/**.go &`在末尾加入一个`&`可以让程序简单地跑在后台
 
 `go doc`godoc这个工具可以让你直接在本地命令行阅读标准库的文档 example `go doc http.ListenAndServe`
+
+- 获取键盘输入
+
+  ```go
+  func main() {
+      seen := make(map[string]bool) // a set of strings
+      input := bufio.NewScanner(os.Stdin)
+      for input.Scan() {
+          line := input.Text()
+          if !seen[line] {
+              seen[line] = true
+              fmt.Println(line)
+          }
+      }
+  
+      if err := input.Err(); err != nil {
+          fmt.Fprintf(os.Stderr, "dedup: %v\n", err)
+          os.Exit(1)
+      }
+  }
+  
+  ```
+
+  
 
 ## 程序结构
 
@@ -651,4 +683,146 @@ const (
    
    ```
 
-   
+
+6. 可以使用`sort.Strings([]string)` 对元素为`string`类型的`slice`切片进行排序
+
+### Map
+
+特点：
+
+- key有相同的类型，val有相同的类型
+- 元素不可以取址
+
+声明：
+
+```go
+//make函数创建语法
+ages := make(map[string]int)
+
+//map字面值语法
+ages := map[string]int{
+    "alice":   31,
+    "charlie": 34,
+}
+//判断该key是否存在
+if _, ok := ages["test3"]; !ok {/*。。。*/}
+//删除元素
+delete(ages, "alice") 
+```
+
+### struct
+
+特点
+
+- 一个命名为S的结构体类型将不能再包含S类型的成员：因为一个聚合的值不能包含它自身。（该限制同样适用于数组。）
+- 但是S类型的结构体可以包含`*S`指针类型的成员，
+- 可比较，可以用于map的key类型
+- 匿名嵌入
+
+声明：
+
+```go
+//1. 
+//如果相邻的成员类型如果相同的话可以被合并到一行
+type Employee struct {
+    ID            int
+    Name, Address string
+    DoB           time.Time
+    Position      string
+    Salary        int
+    ManagerID     int
+}
+
+//实现链表数据结构
+type tree struct {
+    value       int
+    left, right *tree
+}
+
+//2. 结构体字面值 按顺序赋值
+type Point struct{ X, Y int }
+p := Point{1, 2}
+p["X"] //1
+
+//3.因为结构体通常通过指针处理，可以用下面的写法来创建并初始化一个结构体变量，并返回结构体的地址：
+pp := &Point{1, 2}
+//等价于
+pp := new(Point)
+*pp = Point{1, 2}
+
+//匿名嵌入
+type Circle struct {
+    Point
+    Radius int
+}
+
+type Wheel struct {
+    Circle
+    Spokes int
+}
+var w Wheel
+
+w.Raduis = 20 //可以直接赋值
+
+```
+
+### json
+
+将go语言中的结构体`slice`转为`JSON`的过程叫`编组(marshaling)`
+
+将go语言数据转换为`JSON` `json.Marshal` ,反之使用 `json.Unmarshal`
+
+```go
+//紧凑形式
+data, err := json.Marshal(movies)
+if err != nil {
+    log.Fatalf("JSON marshaling failed: %s", err)
+}
+fmt.Printf("%s\n", data)
+//生成整齐缩进的输出
+data, err := json.MarshalIndent(movies, "", "    ")
+
+type Movie struct {
+		Title  string
+		Year   int  `json:"released"` //生成Json时 Year字段将被替换为 released
+		Color  bool `json:"color,omitempty"` //omitempty 表示该字段为空 时不生成该字段
+		Actors []string
+	}
+// 将JSON转为 go语言Struct
+var titles []struct{ Title string }
+if err := json.Unmarshal(data, &titles); err != nil {
+    log.Fatalf("JSON unmarshaling failed: %s", err)
+}
+fmt.Println(titles) // "[{Casablanca} {Cool Hand Luke} {Bullitt}]"
+package github
+
+import "time"
+
+const IssuesURL = "https://api.github.com/search/issues"
+
+type IssuesSearchResult struct {
+    TotalCount int `json:"total_count"`
+    Items          []*Issue
+}
+
+type Issue struct {
+    Number    int
+    HTMLURL   string `json:"html_url"`
+    Title     string
+    State     string
+    User      *User
+    CreatedAt time.Time `json:"created_at"`
+    Body      string    // in Markdown format
+}
+
+type User struct {
+    Login   string
+    HTMLURL string `json:"html_url"`
+}
+
+```
+
+流式解码器 `json.NewDecoder(resp.Body).Decode(&result)`
+
+### 文本和html模板
+
