@@ -1,12 +1,26 @@
-# GoLang
+# GoLang（Go 语言圣经）
 
-​ Go 是一门编译型语言，Go 语言的工具链将源代码及其依赖转换成计算机的机器指令（译注：静 态编译）
+[【本书连接】](https://gopl-zh.github.io/)
 
-​ Go 语言最有意思并且最新奇的特性就是对并发编程的支持
+Go 是一门编译型语言，Go 语言的工具链将源代码及其依赖转换成计算机的机器指令（译注：静 态编译）
 
-​ 原生支持 Unicode
+Go 语言最有意思并且最新奇的特性就是对并发编程的支持
+
+原生支持 Unicode
 
 - Go 语言中，所有的函数参数都是值拷贝传入的，函数参数将不再是函数调用时的原始变量
+
+- `go.sun`:管理项目的模块依赖项的版本信息
+
+- 内存分配发生在以下情况下：
+
+  - 使用`new`关键字创建新的对象时，会在堆上分配内存。
+  - 使用字面量或复合字面量（composite literal）初始化变量时，也会在堆上分配内存。
+
+- 拷贝操作发生在以下情况下：
+
+  - 将一个变量赋值给另一个变量时，会进行浅拷贝。这意味着只会复制指针，而不会复制对象本身。修改其中一个变量的值会影响到另一个变量。
+  - 传递参数给函数时，会进行参数拷贝。如果参数是一个指针类型，那么拷贝的是指针，而不是指针指向的对象。
 
 ### 工具包
 
@@ -29,9 +43,9 @@ for input.Scan() {
 
 `os`：文件类型 `*os.File`
 
-​ `os.Stdin`:指向标准输入文件的指针
+`os.Stdin`:指向标准输入文件的指针
 
-​ `os.Stdin`、`os.Stdout` 和 `os.Stderr` 分别表示程序的标准输入、标准输出和标准错误流。它们是 `os` 包中的三个常量，分别对应于系统中的标准输入、标准输出和标准错误流。
+`os.Stdin`、`os.Stdout` 和 `os.Stderr` 分别表示程序的标准输入、标准输出和标准错误流。它们是 `os` 包中的三个常量，分别对应于系统中的标准输入、标准输出和标准错误流。
 
 ```go
  f, err := os.Open(arg)
@@ -51,11 +65,17 @@ for line, n := range counts {
 
 ### 内置函数
 
+- `log`
+
+  - `Fatalf`:默认会在错误信息之前输出时间信息
+  -
+
 - `make(type,len,容量 可选)`:分共配内存空间并初始化 `slice`，`map` 和 `chan` 类型的对象
 
 - `strings`
 
   - `join`相当于`array.join`,`strings.Join(os.Args,"\n")`
+  - `Map`对传入字符串的每个字符使用函数
 
 - `map[keyType]valueType`:无序键值对组合
 
@@ -70,11 +90,13 @@ for line, n := range counts {
 
 - `fmt`：`printf`是指`print format`，`println` 是指 `print line`
 
-​ `Fprint` 函数是一个格式化输出函数，它将指定的内容格式化后输出到指定的 `io.Writer` 接口中。这个接口可以是标准输出、文件、网络连接等
+`Fprint` `F`指的是`File` 函数是一个格式化输出函数，它将指定的内容格式化后输出到指定的 `io.Writer` 接口中。这个接口可以是标准输出、文件、网络连接等
 
-​ `Print` 函数是一个简单的输出函数，它将指定的内容直接输出到标准输出（控制台）。
+`Print` 函数是一个简单的输出函数，它将指定的内容直接输出到标准输出（控制台）。
 
-​ `fmt.Sprint`是 Go 语言中的一个函数，它用于将多个值转换为字符串并拼接在一起
+`fmt.Sprint`是 Go 语言中的一个函数，它用于将多个值转换为字符串并拼接在一起，返回新字符串
+
+`fmt.Errorf`:将错误格式化
 
 - `bytes`:
 
@@ -113,6 +135,9 @@ func intsToString(values []int) string {
 | %10d：       | 指定输出宽度为 10 个字符的十进制整数。 |
 | %.2f：       | 指定浮点数的小数点后保留 2 位。        |
 | %s：         | 指定字符串的输出宽度。                 |
+| %c:		   |将整数值解释为对应的Unicode字符 		|
+
+`io.EOF`在可读数据没有输入的时候返回
 
 [golang 说明文档](https://pkg.go.dev/fmt)
 
@@ -228,11 +253,11 @@ func intsToString(values []int) string {
 
 ### 1. 命名
 
-​ 如果一个名 i 在是大写字母开头的，那么它将会是导出的，可以被外部的包所访问
+如果一个名 i 在是大写字母开头的，那么它将会是导出的，可以被外部的包所访问
 
 ### 2. 声明
 
-​ `package`说明该文件属于哪个包
+`package`说明该文件属于哪个包
 
 ### 3. 变量
 
@@ -294,7 +319,7 @@ usage`p := new(int)   // p, *int 类型, 指向匿名的 int 变量`
 
 - go 语言垃圾回收的基本思路：
 
-  ​ 从每个包级的变量和每个当前运行函数的每一个局部变量开始，通过指针或引用的访问路径遍历，是否可以找到该变量。如果不存在这样的访问路径，那么说明该变量是不可达的，也就是说它是否存在并不会影响程序后续的计算结果。
+  从每个包级的变量和每个当前运行函数的每一个局部变量开始，通过指针或引用的访问路径遍历，是否可以找到该变量。如果不存在这样的访问路径，那么说明该变量是不可达的，也就是说它是否存在并不会影响程序后续的计算结果。
 
 ### 3. 赋值
 
@@ -363,11 +388,11 @@ func init() {
 >
 > 两位 16 进制 相当于 一字节 8 位
 
-​ 有符号整数：int8、int16、int32 和 int64
+有符号整数：int8、int16、int32 和 int64
 
-​ 无符号整数：uint8、uint16、uint32 和 uint64
+无符号整数：uint8、uint16、uint32 和 uint64
 
-​ int、uint 对应特定 cpu 平台机器字大小的有符号和无符号整数
+int、uint 对应特定 cpu 平台机器字大小的有符号和无符号整数
 
 - `Unicode`字符`rune`类型是和`int32`等价的类型，通常用于表示一个`Unicode`码点
 - 同样`byte`也是`uint8`类型的等价类型
@@ -401,7 +426,7 @@ func init() {
 
 #### 运算符
 
-​ 位运算
+位运算
 
 一个`x<<n`左移运算等价于乘以$2^n$，一个`x>>n`右移运算等价于除以$2^n$
 
@@ -437,7 +462,7 @@ fmt.Printf("%08b\n", x>>1) // "00010001", the set {0, 4}
 
 ### 2. 浮点数
 
-​ `float64` `float32`,优先使用`float64`,因为 float32 的有效 bit 位只有 23 个，其它的 bit 位用于指数和符号；当整数大于 23bit 能表达的范围时，float32 的表示将出现误差
+`float64` `float32`,优先使用`float64`,因为 float32 的有效 bit 位只有 23 个，其它的 bit 位用于指数和符号；当整数大于 23bit 能表达的范围时，float32 的表示将出现误差
 
 ```go
 for x := 0; x < 8; x++ {
@@ -449,7 +474,7 @@ for x := 0; x < 8; x++ {
 
 ### 3. 复数
 
-​ `complex64` `complex128`分别对应 float32 和 float64 两种浮点数精度
+`complex64` `complex128`分别对应 float32 和 float64 两种浮点数精度
 
 ### 4. 字符串
 
@@ -649,8 +674,9 @@ const (
           fmt.Println("After modifyArrayPtr:", arr)
           //After modifyArrayPtr: [100 2 3]
       }
+      ```
 
-
+      ```
 
       ```
 
@@ -673,7 +699,7 @@ const (
 
    ![](https://gopl-zh.github.io/images/ch4-01.png)
 
-3. `append`函数用于给`slice`追加元素
+3. `append`函数用于给`slice`追加元素）（如若`cap`不足 append 方法会自动扩充该容量）
 
 4. 使用`make`创建`slice`
 
@@ -898,6 +924,8 @@ func main() {
   func Sin(x float64) float //implemented in assembly language
   ```
 
+- 函数也有闭包
+
 特殊返回值命名
 
 ```go
@@ -908,3 +936,307 @@ func tf(x,y int)(sum int)  {
 ```
 
 > 该情况下 返回值被声明为一个`sum`的零值
+
+```go
+//不分成两步 函数字面量无法与visitAll绑定
+visitAll := func(items []string) {
+    // ...
+    visitAll(m[item]) // compile error: undefined: visitAll
+    // ...
+}
+```
+
+循环或者 rang 中使用的局部变量都是同一个 每一次循环更新该变量的值
+
+```go
+var rmdirs []func()
+for _, dir := range tempDirs() {
+    //正确使用方法创建一个新的局部变量
+    //var di = dir
+    os.MkdirAll(dir, 0755)
+    rmdirs = append(rmdirs, func() {
+        //会使用最后一个dir值
+        os.RemoveAll(dir) // NOTE: incorrect!
+    })
+}
+```
+
+### 可变参数
+
+`interface`表示函数的最后一个参数可以接收任意类型
+
+```go
+func errorf(linenum int, format string, args ...interface{}) {
+    fmt.Fprintf(os.Stderr, "Line %d: ", linenum)
+    fmt.Fprintf(os.Stderr, format, args...)
+    fmt.Fprintln(os.Stderr)
+}
+linenum, name := 12, "count"
+errorf(linenum, "undefined: %s", name) // "Line 12: undefined: count"
+
+```
+
+### Deferred 函数
+
+defer 语句经常被用于处理成对的操作，如打开、关闭、连接、断开连接、加锁、释放锁。通过 defer 机制，不论函数逻辑多复杂，都能保证在任何执行路径下，资源被释放。释放资源的 defer 应该直接跟在请求资源的语句后。
+
+在 Go 语言中，`defer`关键字用于延迟执行某个函数或方法的调用，直到==包围它的函数或方法返回之前==。`defer`语句通常用于在函数或方法执行结束后进行一些清理工作，例如关闭文件、释放资源、解锁互斥锁等。它主要用于简化代码的编写和维护，确保关键的清理操作不会被遗漏。
+
+`defer`语句的执行顺序是后进先出（LIFO）的，也就是说，最后一个`defer`语句将最先执行，而第一个`defer`语句将最后执行。当包围`defer`语句的函数或方法返回时，所有延迟执行的函数调用会按照它们定义的顺序逆序执行。
+
+- 在命名返回值的前提下 可以打印返回值
+
+  ```go
+  func double(x int) (result int) {
+      defer func() { fmt.Printf("double(%d) = %d\n", x,result) }()
+      return x + x
+  }
+  _ = double(4)
+  // Output:
+  // "double(4) = 8"
+  ```
+
+- 在以上前提下可以甚至可以直接修改返回值
+
+  ```go
+  func triple(x int) (result int) {
+      defer func() { result += x }()
+      return double(x)
+  }
+  fmt.Println(triple(4)) // "12"
+
+  ```
+
+- 注意：以下这种情况会导致错误
+
+  ```go
+  //f.Close 只会在包含此循环的函数体执行完再执行Close ，导致系统的文件描述符耗尽，因为在所有文件都被处理之前，没有文件会被关闭
+  for _, filename := range filenames {
+      f, err := os.Open(filename)
+      if err != nil {
+          return err
+      }
+      defer f.Close() // NOTE: risky; could run out of file descriptors
+      // ...process f…
+  }
+  //改进 封装进单独的函数
+  for _, filename := range filenames {
+      if err := doFile(filename); err != nil {
+          return err
+      }
+  }
+  func doFile(filename string) error {
+      f, err := os.Open(filename)
+      if err != nil {
+          return err
+      }
+      defer f.Close()
+      // ...process f…
+  }
+
+  ```
+
+### Panic 异常
+
+- `Panic`异常发生时，程序会终端运行，立即执行在该`goroutine`中被延迟的函数（defer）机制，然后程序崩溃并输出日志信息
+- 使用`panic`函数可以主动抛出错误` panic(fmt.Sprintf("invalid suit %q", s)) // Joker?`
+- 在 Go 的 panic 机制中，延迟函数`(defer)`的调用在释放堆栈信息之前
+
+### Recover 捕获异常
+
+如果在 deferred 函数中调用了内置函数`recover`，并且定义该 defer 语句的函数发生了 panic 异常，recover 会使程序从 panic 中恢复，并返回 panic value
+
+```go
+func Parse(input string) (s *Syntax, err error) {
+    defer func() {
+        if p := recover(); p != nil {
+            err = fmt.Errorf("internal error: %v", p)
+        }
+    }()
+    // ...parser...
+}
+```
+
+ `recover`函数帮助`Parse`从`panic`中恢复。在`deferred`函数内部，`panic value`被附加到错误信息中；并用`err`变量接收错误信息，返回给调用者。我们也可以通过调用`runtime.Stack`往错误信息中添加完整的堆栈调用信息。
+
+## 方法
+
+方法声明
+
+`func (p 类型) 方法名(q Point) float64 { /*。。。*/ }`
+
+`(p 类型)`称为方法的接收器
+
+特点：
+
+- 没有 this 或者 self 作为接收器，以上示例中可以调用`p`访问该类型的一些属性及方法
+
+### 基于指针对象的方法
+
+```go
+//声明
+func (p *Point) ScaleBy(factor float64) {
+    p.X *= factor
+    p.Y *= factor
+}
+//使用
+p.ScaleBy()//p 被默认转为&p去调用该方法
+```
+
+- 在声明方法时，如果一个类型名本身是一个指针的话，是不允许其出现在接收器中的
+
+  ```go
+  type P *int
+  func (P) f() { /* ... */ } // compile error: invalid receiver type
+  ```
+
+- 编译器会隐式地帮我们用`&`取址去调用指针对象方法，这种简写方法只适用于“变量”，包括 struct 里的字段比如 p.X，以及 array 和 slice 内的元素比如 perim[0]
+
+- 注：不管你的 method 的 receiver 是指针类型还是非指针类型，都是可以通过指针/非指针类型进行调用的，编译器会帮你做类型转换。
+
+- 注：在声明一个 method 的 receiver 该是指针还是非指针类型时，你需要考虑两方面的因素，第一方面是这个`对象本身是不是特别大`，如果声明为非指针变量时，调用会产生一次`拷贝`；第二方面是如果你用指针类型作为 receiver，那么你一定要注意，这种指针类型指向的始终是一块内存地址，就算你对其进行了拷贝。
+
+- `nil`也是一个合法的接收器类型
+
+### 封装
+
+- 首字母小写：私有变量 首字符大写：公有变量 (在其他 package 引入访问时的效果)
+
+## 接口
+
+空接口类型：
+
+```go
+var any interface{}
+any = true
+any = 12.34
+any = "hello"
+any = map[string]int{"one": 1}
+any = new(bytes.Buffer)
+```
+
+### flag.value接口
+
+```go
+//定义
+var period = flag.Duration("period", 1*time.Second, "sleep period")
+
+//使用
+func main(){
+	flag.Parse() //解析行内参数
+    fmt.Printf("Sleeping for %v...", *period)
+    time.Sleep(*period)
+    fmt.Println()
+}
+
+//cmd
+go run . -period 50ms
+```
+
+- 可以自定义实现一个类flag方法获取命令行参数
+
+  example：
+
+  ```go
+  func CelsiusFlag(name string, value Celsius, usage string) *Celsius {
+      f := celsiusFlag{value}
+      flag.CommandLine.Var(&f, name, usage) //可以使用该方法注册一个flag
+      return &f.Celsius
+  }
+  ```
+
+### sort.interface接口
+
+### http.handle
+
+- 可以使用`ServeMux`来简化URL和handlers的联系
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+)
+
+func main() {
+	db := database{"shoes": 50, "socks": 5}
+	mux := http.NewServeMux()
+	mux.Handle("/list", http.HandlerFunc(db.list))
+	mux.Handle("/price", http.HandlerFunc(db.price))
+	log.Fatal(http.ListenAndServe("localhost:8000", mux))
+}
+type dollars float32
+func (d dollars) String() string { return fmt.Sprintf("$%.2f", d) }
+
+type database map[string]dollars
+
+func (db database) list(w http.ResponseWriter, req *http.Request) {
+	for item, price := range db {
+		fmt.Fprintf(w, "%s: %s\n", item, price)
+	}
+}
+
+func (db database) price(w http.ResponseWriter, req *http.Request) {
+	item := req.URL.Query().Get("item")
+	price, ok := db[item]
+	if !ok {
+		w.WriteHeader(http.StatusNotFound) // 404
+		fmt.Fprintf(w, "no such item: %q\n", item)
+		return
+	}
+	fmt.Fprintf(w, "%s\n", price)
+}
+
+```
+
+### error接口
+
+### 类型断言
+
+1. 语法
+
+   `f := val.(type)`:校验错误会抛出`panic错误`
+
+   `f, ok := val.(float64)`:不会抛出错误，转换成功与否会以布尔值形式存在`ok`中
+
+2. 实践
+
+   ```go
+   if w, ok := w.(*os.File); ok {
+       // ...use w...
+   }
+   ```
+
+3. 基于类型断言判断错误
+
+   `fmt.Println(os.IsNotExist(err))`,
+   
+4. 可以通过类型断言判断变量是否有某个方法，从而决定其行为
+
+   ```go
+   type stringWriter interface {
+           WriteString(string) (n int, err error)
+       }
+       if sw, ok := w.(stringWriter); ok {
+           return sw.WriteString(s) // avoid a copy
+       }
+   ```
+
+### 类型分支
+
+可以使用`switch x.(type)`判断类型
+
+```go
+var x interface{}
+
+switch  x := x.(type)//x.(type) {
+case nil:       // ...
+case int, uint: // ...
+case bool:      // ...
+case string:    // ...
+default:        // ...
+}
+```
+
