@@ -6,6 +6,10 @@ Go 是一门编译型语言，Go 语言的工具链将源代码及其依赖转�
 
 Go 语言最有意思并且最新奇的特性就是对并发编程的支持
 
+`TinyGo`是一个用于嵌入式设备和WebAssembly的Go编译器。它是Go语言的一个子集，旨在提供更小的二进制文件大小和更低的内存占用。TinyGo的目标是在资源受限的环境中运行Go代码，例如微控制器、物联网设备和浏览器中的WebAssembly模块。它支持大部分的Go语言特性，并提供了与标准Go编译器兼容的语法和API。
+
+`Scoop`是一个针对Windows操作系统的命令行软件包管理器。它可以帮助用户在Windows上轻松地安装、更新和管理各种开源软件包
+
 原生支持 Unicode
 
 - Go 语言中，所有的函数参数都是值拷贝传入的，函数参数将不再是函数调用时的原始变量
@@ -354,6 +358,8 @@ usage`p := new(int)   // p, *int 类型, 指向匿名的 int 变量`
   如果包中含有多个.go 源文件，它们将按照发给编译器的顺序进行初始化，Go 语言的构建工具首先会将.go 文件根据文件名排序，然后依次调用编译器编译。
 
   对于在包级别声明的变量，如果有初始化表达式则用表达式初始化，还有一些没有初始化表达式的，例如某些表格数据初始化并不是一个简单的赋值过程。在这种情况下，我们可以用一个特殊的`init`初始化函数来简化初始化工作。每个文件都可以包含多个 init 初始化函数
+  
+- 同目录下的`go`文件必须属于同一个`package`
 
 ### 6. 作用域
 
@@ -1240,3 +1246,223 @@ default:        // ...
 }
 ```
 
+## Goroutines和Channels
+
+### Goroutines
+
+可以理解为执行一个使用go修饰的函数时 其执行可以与其他函数体并行执行
+
+### Channel
+
+1. 线程安全：channel是线程安全的，多个协程可以同时读写一个channel，而不会发生数据竞争的问题(go在Channel内部实现了锁机制)
+2. 阻塞式发送接收：当一个协程向一个channel发送数据时，如果channel已经满了，发送操作会被阻塞，直到有其他协程从channel中取走了数据
+3. 顺序性：先存x再y，则取先取x再y
+4. 可以关闭：关闭后可以取无法向其中发送，关闭`channel`可以避免内存泄漏
+5. 缓冲区大小：channel可以带有一个缓冲区，用于存储一定量的数据。如果缓冲区已经满了，发送操作会被阻塞，直到有其他协程从channel中取走了数据；`ch := make(chan int, 10)`
+
+![](https://img-blog.csdn.net/20180825194734104?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Nnc2d5NQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+#### 不带缓存的Channel
+
+- `channel`接收数据时如果`channel`中没有数据可供接收，接收操作会被阻塞，直到有其他协程向`channel`中发送了数据
+
+  
+
+```go
+ch := make(chan int) // ch has type 'chan int'
+ch <- x  // a send statement
+x = <-ch // a receive expression in an assignment statement
+<-ch     // 不使用接收参数
+close(ch)
+
+//make 如果第二个参数大于0 就是带缓存的channel
+ch = make(chan int)    // 无缓存 channel
+ch = make(chan int, 0) // 无 channel
+ch = make(chan int, 3) // 容量为3 的channel
+```
+
+#### 串联的Channels（pipeline） 单方向Channel
+
+```go
+func counter(out chan<- int) { //out只发送 chan <- int
+    for x := 0; x < 100; x++ {
+        out <- x
+    }
+    close(out)
+}
+
+func squarer(out chan<- int, in <-chan int) { //in只接收 <-chan int
+    for v := range in {
+        out <- v * v
+    }
+    close(out)
+}
+
+func printer(in <-chan int) {
+    for v := range in {
+        fmt.Println(v)
+    }
+}
+
+func main() {
+    naturals := make(chan int)
+    squares := make(chan int)
+    go counter(naturals)
+    go squarer(squares, naturals)
+    printer(squares)
+}
+```
+
+#### 带缓存的Channel
+
+1. 向`channel`发送时，如果`channel`容量满，则发生阻塞
+   - 查看ch容量`cap(ch)`
+   - 查看ch有效元素个数`len(ch)`
+
+可以使用`sync.WaitGroup`统计`goroutines`的数量
+
+### 并发的循环
+
+```go
+func makeThumbnails6(filenames <-chan string) int64 {
+    resChannel := make(chan int64)
+    var wg sync.WaitGroup // number of working goroutines
+    for f := range filenames {
+        wg.Add(1)
+        go func(f string) {
+            defer wg.Done()
+            resChannel <- manage()//。。。
+        }(f)
+    }
+
+    // closer
+    go func() {
+        wg.Wait()
+        close(resChannel)
+    }()
+
+    var total int64
+    for size := range resChannel {
+        total += size
+    }
+    return total
+}
+```
+
+### 基于Select的多路复用
+
+```go
+select {
+case <-ch1:
+    // ...
+case x := <-ch2:
+    // ...use x...
+case ch3 <- y:
+    // ...
+default:
+    // ...
+}
+```
+
+## 基于共享变量的并发
+
+### 互斥锁`Sync.Mutex`
+
+```go
+var mu sync.Mutex
+
+func Deposit(amount int) {
+    mu.Lock()
+    balance = balance + amount
+    mu.Unlock()
+}
+```
+
+- 无法对变量进行重入锁，否则会导致程序死锁
+
+### 读写锁`sync.RWMutex`
+
+​	读锁（也称为共享锁）可以被多个读操作同时获取，但是写操作需要等待所有读操作完成后才能获取写锁。这种机制可以实现多个并发的读操作，而不会互相影响。
+
+​	写锁（也称为排他锁）只能被一个写操作获取，当一个写锁被获取时，其他读操作和写操作都需要等待该写锁释放后才能继续执行。这种机制可以确保在写操作进行时，没有其他读操作或写操作可以同时进行。
+
+### `sync.Once`惰性初始化
+
+每一次对`Do(loadIcons)`的调用都会锁定`mutex`，并会检查boolean变量（译注：Go1.9中会先判断boolean变量是否为1(true)，只有不为1才锁定mutex，不再需要每次都锁定mutex）
+
+```go
+var loadIconsOnce sync.Once
+var icons map[string]image.Image
+// Concurrency-safe.
+func Icon(name string) image.Image {
+    loadIconsOnce.Do(loadIcons)
+    return icons[name]
+}
+```
+
+### 竞争条件检测
+
+​	在Go语言中，`go build -race` 命令用于构建一个启用了数据竞争检测的可执行程序。数据竞争是多个goroutine并发访问共享变量时可能发生的一种情况，它会导致不确定的行为和bug。
+
+当使用 `-race` 参数进行构建时，Go编译器会插入额外的代码来检测数据竞争。这些额外的代码会记录每个共享变量的访问情况，并在发现潜在的数据竞争时触发一个panic。
+
+通过在构建过程中启用数据竞争检测，可以帮助开发人员找出潜在的并发问题，并更好地理解和调试并发程序。
+
+请注意，使用 `-race` 参数构建的程序可能会有额外的开销，并且会导致执行速度变慢。因此，通常建议在开发和测试阶段使用 `-race` 参数进行构建，以便及早发现并修复潜在的数据竞争问题。在生产环境中，可以使用正常的构建方式来编译程序。
+
+## 反射
+
+### reflect.Type与reflect.value
+
+## WASM
+
+windows 可以使用`scoop`下载需要的包
+
+1. 使用`tinygo`
+
+
+```shell
+tinygo build -o wasm.wasm -target wasm ./main.go 
+```
+
+`wasm_exec.js`需要使用`C:\Program Files\tinygo\targets`下的，不然会报错
+
+- `go`中给`js`暴露方法可以添加一个注释 
+
+```go
+//go 中暴露方法
+//export sum
+func sum(a int, b int) int {
+	return a + b
+}
+```
+
+```js
+//js 中使用
+const go = new Go();
+  WebAssembly.instantiateStreaming(fetch("../test.wasm"), go.importObject).then(function (result) {
+    go.run(result.instance);
+    const addRes = result.instance.exports.sum;
+    console.log(addRes(20, 10));
+  });
+```
+
+2. 使用go build
+
+> 需要配置build env 
+>
+> 可以直接在环境变量目录内的env GOOS=js GOARCH=wasm
+
+- 暴露方法需要使用`syscall/js`等库
+
+```shell
+go build -o test.wasm main.go
+# go bash 使用
+GOOS=js GOARCH=wasm go build -o test.wasm main.go
+```
+
+前端需要引入`wasm_exec.js`
+
+```shell
+cp "$(go env GOROOT)/misc/wasm/wasm_exec.js"
+```
