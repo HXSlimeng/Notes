@@ -42,3 +42,172 @@ func main() {
 }
 ```
 
+### 表单
+
+```go
+router.POST("/form_post", func(c *gin.Context) {
+    //postForm(key) 会尝试获取key字段的值 否则返回空字符串
+		message := c.PostForm("message")
+    //DefaultPostForm("key",value) 会尝试获取key字段的值 否则返回value值
+		nick := c.DefaultPostForm("nick", "anonymous")
+
+		c.JSON(200, gin.H{
+			"status":  "posted",
+			"message": message,
+			"nick":    nick,
+		})
+	})
+```
+
+### pureJson
+
+```go
+// 提供 unicode 实体
+	r.GET("/json", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"html": "<b>Hello, world!</b>",
+		})
+        //{"html":"\u003cb\u003eHello, world!\u003c/b\u003e"}
+	})
+	
+	// 提供字面字符
+	r.GET("/purejson", func(c *gin.Context) {
+		c.PureJSON(200, gin.H{
+			"html": "<b>Hello, world!</b>",
+		})
+        //{"html":"<b>Hello, world!</b>"}
+	})
+```
+
+### Query和postForm
+
+```go
+id := c.Query("id")
+		page := c.DefaultQuery("page", "0")
+		name := c.PostForm("name")
+		message := c.PostForm("message")
+```
+
+### SecureJSON 
+
+> SecureJSON 是一个用于在 Go 语言中安全地处理 JSON 数据的库。它提供了一些功能来防止常见的安全漏洞，例如 JSON 注入和数据篡改。
+
+```go
+names := []string{"lena", "austin", "foo"}
+
+		// 将输出：while(1);["lena","austin","foo"]
+		c.SecureJSON(http.StatusOK, names)
+```
+
+### XML/JSON/YAML/ProtoBuf 渲染
+
+```go
+var msg struct {
+			Name    string `json:"user"`
+			Message string
+			Number  int
+		}
+		msg.Name = "Lena"
+		msg.Message = "hey"
+		msg.Number = 123
+		// 注意 msg.Name 在 JSON 中变成了 "user"
+		// 将输出：{"user": "Lena", "Message": "hey", "Number": 123}
+		c.JSON(http.StatusOK, msg)
+```
+
+### 上传文件
+
+`multipart/form-data` 支持文件上传，可以通过表单将文件数据发送到服务器。
+
+ `application/x-www-form-urlencoded` 不支持文件上传，只能传输文本数据
+
+```go
+r.MaxMultipartMemory = 8 << 20  // 8 MiB
+	r.POST("/upload", func(c *gin.Context) {
+		// 单文件
+		file, _ := c.FormFile("file")
+		log.Println(file.Filename)
+
+		dst := "./" + file.Filename
+		// 上传文件至指定的完整文件路径
+		c.SaveUploadedFile(file, dst)
+
+		c.String(http.StatusOK, fmt.Sprintf("'%s' uploaded!", file.Filename))
+        
+        //多文件上传
+		form, _ := c.MultipartForm()
+		files := form.File["upload[]"]
+
+		for _, file := range files {
+			log.Println(file.Filename)
+
+			// 上传文件至指定目录
+			c.SaveUploadedFile(file, dst)
+		}
+		c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
+	})
+//多文件上传
+```
+
+### 中间件
+
+使用 `gin.Default` 不使用 `gin.New`
+
+### 优雅退出程序
+
+```go
+srv := &http.Server{
+		Addr:    ":8080",
+		Handler: router,
+	}
+
+	go func() {
+		// 服务连接
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	// 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	log.Println("Shutdown Server ...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server Shutdown:", err)
+	}
+	log.Println("Server exiting")
+```
+
+`signal.*Notify*(chan quit, os.Interrupt)`可以监听系统执行一些操作时的信号
+
+### 使用`BasicAuch`中间件
+
+```go
+authorized := r.Group("/admin", gin.BasicAuth(gin.Accounts{
+		"foo":    "bar",
+		"austin": "1234",
+		"lena":   "hello2",
+		"manu":   "4321",
+	}))
+authorized.GET("/secrets", func(c *gin.Context) {
+		// 获取用户，它是由 BasicAuth 中间件设置的
+		user := c.MustGet(gin.AuthUserKey).(string)
+		if secret, ok := secrets[user]; ok {
+			c.JSON(http.StatusOK, gin.H{"user": user, "secret": secret})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"user": user, "secret": "NO SECRET :("})
+		}
+	})
+```
+
+### 使用中间件
+
+- 单个路由中间件 `r.group("/",中间件。。。)` `r.get("/",。。。中间件)`
+- 路由中间件 `r.use(...中间件)`
+
+### 只绑定Query`ShouldBindQuery`
+
