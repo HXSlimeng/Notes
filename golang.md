@@ -13,18 +13,41 @@ Go 语言最有意思并且最新奇的特性就是对并发编程的支持
 原生支持 Unicode
 
 - Go 语言中，所有的函数参数都是值拷贝传入的，函数参数将不再是函数调用时的原始变量
-
 - `go.sun`:管理项目的模块依赖项的版本信息
-
 - 内存分配发生在以下情况下：
 
   - 使用`new`关键字创建新的对象时，会在堆上分配内存。
   - 使用字面量或复合字面量（composite literal）初始化变量时，也会在堆上分配内存。
-
 - 拷贝操作发生在以下情况下：
 
   - 将一个变量赋值给另一个变量时，会进行浅拷贝。这意味着只会复制指针，而不会复制对象本身。修改其中一个变量的值会影响到另一个变量。
   - 传递参数给函数时，会进行参数拷贝。如果参数是一个指针类型，那么拷贝的是指针，而不是指针指向的对象。
+- 在Go语言中，相对路径是相`对于当前工作目录`的路径。当前工作目录是您在`运行Go程序时所在的目录`。
+
+```go
+package main
+
+import (
+    "fmt"
+    "os"
+    "path/filepath"
+)
+
+func main() {
+    wd, err := os.Getwd()
+    if err != nil {
+        fmt.Println("Failed to get current working directory:", err)
+        return
+    }
+
+    relativePath := "path/to/file.txt"
+    absolutePath := filepath.Join(wd, relativePath)
+
+    fmt.Println("Absolute path:", absolutePath)
+}
+```
+
+
 
 ### 工具包
 
@@ -1123,6 +1146,8 @@ any = new(bytes.Buffer)
 
 ### flag.value接口
 
+
+
 ```go
 //定义
 var period = flag.Duration("period", 1*time.Second, "sleep period")
@@ -1251,6 +1276,8 @@ default:        // ...
 ### Goroutines
 
 可以理解为执行一个使用go修饰的函数时 其执行可以与其他函数体并行执行
+
+在Go语言中，如果主协程（即`main`函数所在的协程）执行完毕后，即使其他协程还没有完成，程序也会立即退出，如果希望等待所有的goroutine完成后再退出程序，可以使用`sync.WaitGroup`来实现
 
 ### Channel
 
