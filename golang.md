@@ -1441,6 +1441,31 @@ func Icon(name string) image.Image {
 
 ### reflect.Type与reflect.value
 
+- reflect.Kind获取元素
+
+```go
+func ResolveSearchQuery(ins interface{}, db *gorm.DB) *gorm.DB {
+	st := reflect.TypeOf(ins).Elem()//获取指针指向的类型
+	
+	nums := st.NumField() //struct 获取成员变量的数量
+	for i := 0; i < nums; i++ {
+
+		fd := st.Field(i) //指定索引的成员
+		key := fd.Tag.Get("json") //获取成员标签
+		val := reflect.ValueOf(ins).Elem().FieldByName(fd.Name) //根据成员的key获取reflect.value
+
+        //isNil只能判断指针类型 isZero可以判断是否为零值 
+		if !val.IsZero() { //判断reflect.val 是否为nil值
+			db = db.Where(fmt.Sprintf("%s = ?",key) ,val.Interface()) //interface 获取reflectVal的原始值
+			fmt.Println(st.Field(i).Name)
+		}
+	}
+	return db
+}
+```
+
+
+
 ## WASM
 
 windows 可以使用`scoop`下载需要的包
